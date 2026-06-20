@@ -6,9 +6,9 @@ import HorizontalSlider from './components/HorizontalSlider';
 import Projects from './components/Projects';
 import Team from './components/Team';
 import AboutUs from './components/AboutUs';
+import Socials from './components/Socials';
 import Footer from './components/Footer';
 import CardStack from './components/CardStack';
-import TelemetryHUD from './components/TelemetryHUD';
 
 function App() {
   const eventsData = [
@@ -28,7 +28,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-white font-sans selection:bg-accent selection:text-background relative">
-      <TelemetryHUD />
       <Navigation />
       <GlobalArrow />
       
@@ -43,6 +42,7 @@ function App() {
 
         <div className="relative z-[70] bg-background">
           <AboutUs />
+          <Socials />
           <Footer />
         </div>
       </main>
