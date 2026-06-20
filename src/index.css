@@ -1,10 +1,18 @@
 @import "tailwindcss";
+html {
+  font-size: 14px; 
+}
 
+@media (max-width: 768px) {
+  html {
+    font-size: 12px; 
+  }
+}
 @theme {
   /* Custom AeroSoc Colors */
   --color-background: #0a0a0a;
   --color-surface: #171717;
-  --color-accent: #eab308;
+  --color-accent: #48E4FF;
   
   /* Custom Typography */
   --font-sans: "Inter", sans-serif;
@@ -30,6 +38,6 @@ body {
 }
 
 .stroke-text {
-  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.1);
+  -webkit-text-stroke: 2px rgba(247, 243, 243, 0.1);
   color: transparent;
 }

@@ -21,7 +21,7 @@ const Heading = () => {
         </h1>
         
         <p className="mt-6 md:mt-8 text-base md:text-xl text-gray-400 max-w-lg font-sans">
-          BIT Mesra's premier aerospace society. Pushing the boundaries of student-led aeronautics, UAV design, and embedded systems.
+          Welcome to AEROSOC LOL
         </p>
 
         <button className="mt-8 md:mt-10 px-6 py-3 md:px-8 md:py-4 bg-accent text-background font-display font-bold text-sm md:text-lg tracking-wide hover:bg-white transition-colors duration-300 relative z-50 group">

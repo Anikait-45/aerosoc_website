@@ -33,7 +33,7 @@ const Events = () => {
       </div>
       <div className="overflow-hidden mt-6">
         <p className="fade-text text-gray-400 font-sans text-xl max-w-2xl">
-          Track our competition dates, guest lectures, and internal hackathons.
+          Events
         </p>
       </div>
     </section>
