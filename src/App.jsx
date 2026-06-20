@@ -36,7 +36,7 @@ function App() {
         <CardStack zIndex={10}><Heading /></CardStack>
         
         <HorizontalSlider id="events" title="Upcoming EVENTS" category="ABCD" data={eventsData} />
-        <HorizontalSlider id="workshops" title="ABCD" category="ABCD" data={workshopsData} />
+        <HorizontalSlider id="workshops" title="Workshops" category="ABCD" data={workshopsData} />
         <div className="relative z-[40] bg-background"><Projects /></div>
         <CardStack zIndex={50}><Team /></CardStack>
         <HorizontalSlider id="gallery" title="The Gallery" category="ABCD" data={galleryData} />
