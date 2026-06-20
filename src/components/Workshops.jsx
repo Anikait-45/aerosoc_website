@@ -30,10 +30,10 @@ const Workshops = () => {
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[200vw] pointer-events-none z-0 flex opacity-20">
         <div className="animate-marquee whitespace-nowrap flex">
           <h2 className="text-[150px] font-display font-black uppercase stroke-text pr-8">
-            TECHNICAL TRAINING
+            TECHNICAL 
           </h2>
           <h2 className="text-[150px] font-display font-black uppercase stroke-text pr-8">
-            TECHNICAL TRAINING
+            TECHNICAL 
           </h2>
         </div>
       </div>
@@ -46,7 +46,7 @@ const Workshops = () => {
         </div>
         <div className="overflow-hidden mt-6">
           <p className="fade-text text-gray-400 font-sans text-xl max-w-2xl">
-            Hands-on training sessions in CAD, embedded C, and flight dynamics.
+            Hands-on training
           </p>
         </div>
       </div>

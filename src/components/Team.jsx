@@ -67,7 +67,7 @@ const Team = () => {
           The <span className="text-accent">Squad</span>
         </h2>
         <p className="mt-4 text-gray-400 font-sans text-xl max-w-xl mx-auto">
-          The leadership driving our aerospace initiatives forward.
+          The leadership driving .
         </p>
       </div>
 

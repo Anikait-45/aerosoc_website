@@ -33,7 +33,7 @@ const Gallery = () => {
       </div>
       <div className="overflow-hidden mt-6">
         <p className="fade-text text-gray-400 font-sans text-xl max-w-2xl">
-          Visual logs of our flight tests, builds, and team deployments.
+          Visual logs .
         </p>
       </div>
     </section>
