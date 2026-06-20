@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom AeroSoc Colors */
+  --color-background: #0a0a0a;
+  --color-surface: #171717;
+  --color-accent: #eab308;
+  
+  /* Custom Typography */
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+}
+
+body {
+  @apply bg-background text-white;
+}
