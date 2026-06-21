@@ -4,37 +4,81 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const galleryData = [
+  { id: 1, location: "TEST SITE ALPHA, 2025", img: "https://images.unsplash.com/photo-1579820010410-c10411aaaa88?q=80&w=800", size: "w-48 md:w-64", yOffset: "-translate-y-16 md:-translate-y-24" },
+  { id: 2, location: "NATIONAL DRONE COMP, 2024", img: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=1200", size: "w-64 md:w-80", yOffset: "translate-y-20 md:translate-y-28" },
+  { id: 3, location: "AERODYNAMICS LAB, 2025", img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800", size: "w-52 md:w-72", yOffset: "-translate-y-6 md:-translate-y-8" },
+  { id: 4, location: "MAIDEN FLIGHT, 2023", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=1200", size: "w-64 md:w-80", yOffset: "translate-y-12 md:translate-y-16" },
+];
+
 const Gallery = () => {
   const sectionRef = useRef(null);
+  const trackRef = useRef(null);
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-      gsap.from(".fade-text", {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: "power3.out",
+      const trackWidth = trackRef.current.scrollWidth;
+      const getScrollDistance = () => trackWidth - window.innerWidth;
+
+      // 1. Horizontal Scroll Tween
+      const scrollTween = gsap.to(trackRef.current, {
+        x: () => -getScrollDistance(),
+        ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 75%",
+          pin: true,
+          scrub: 1,
+          end: () => "+=" + getScrollDistance(),
+          invalidateOnRefresh: true,
         }
       });
+
+      // 2. Animate items sliding in from the right
+      const slideContents = gsap.utils.toArray('.slide-content');
+      slideContents.forEach((slide) => {
+        gsap.fromTo(slide,
+          { x: 50, opacity: 0 }, 
+          {
+            x: 0, opacity: 1, duration: 1.2, ease: "power3.out",
+            scrollTrigger: {
+              trigger: slide,
+              containerAnimation: scrollTween,
+              start: "left 90%", // Triggers right before it fully enters the screen
+            }
+          }
+        );
+      });
+
     }, sectionRef);
+
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="gallery" ref={sectionRef} className="py-32 px-8 md:px-24 bg-surface min-h-screen border-t border-white/5 flex flex-col justify-center">
-      <div className="overflow-hidden">
-        <h2 className="fade-text text-5xl md:text-8xl font-display font-black text-white uppercase tracking-tighter">
-          The <span className="text-accent">Gallery</span>
-        </h2>
-      </div>
-      <div className="overflow-hidden mt-6">
-        <p className="fade-text text-gray-400 font-sans text-xl max-w-2xl">
-          Visual logs .
-        </p>
+    <section id="gallery" ref={sectionRef} className="h-screen overflow-hidden bg-black relative border-t border-white/5 flex items-center">
+      <div ref={trackRef} className="flex h-full items-center px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
+        
+        {galleryData.map((item) => (
+          // Added 'slide-content' class
+          <div key={item.id} className={`slide-content flex-shrink-0 flex flex-col ${item.size} ${item.yOffset}`}>
+            <p className="text-[9px] font-sans tracking-[0.25em] text-gray-500 uppercase mb-3 ml-1">{item.location}</p>
+            <div className="w-full aspect-[4/5] overflow-hidden bg-surface border border-white/5 relative group cursor-pointer">
+              <img src={item.img} alt={item.location} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out" />
+            </div>
+          </div>
+        ))}
+
+        {/* Added 'slide-content' class */}
+        <div className="slide-content flex-shrink-0 w-72 md:w-80 -translate-y-6 md:-translate-y-8">
+          <h3 className="text-xl md:text-2xl font-display text-white leading-relaxed font-light">
+            "It doesn't matter where you start, it's <span className="text-accent italic font-normal">how you progress</span> from there."
+          </h3>
+          <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Faculty Advisor / Statement</p>
+        </div>
+
+        {/* Invisible block pushes the quote to the center before scroll unlocks */}
+        <div className="flex-shrink-0 w-[30vw] pointer-events-none" />
+
       </div>
     </section>
   );

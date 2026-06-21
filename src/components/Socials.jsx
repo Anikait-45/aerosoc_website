@@ -5,21 +5,21 @@ const socialPosts = [
   { 
     id: 1, 
     platform: 'Instagram', 
-    img: "https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=800&auto=format&fit=crop", 
-    link: "https://instagram.com/p/YOUR_POST_ID", 
+    img: "", 
+    link: "https://www.instagram.com/p/DV6PVrAk7A6/?igsh=Ynl2cnhmOWhnOG14", 
     rotation: "-rotate-12", y: "translate-y-12 md:translate-y-20", x: "-translate-x-24 md:-translate-x-64", z: "z-10" 
   },
   { 
     id: 2, 
     platform: 'YouTube', 
-    img: "https://images.unsplash.com/photo-1508138221679-760a23a2285b?q=80&w=800&auto=format&fit=crop", 
+    img: "", 
     link: "https://youtube.com/watch?v=YOUR_VIDEO_ID", 
     rotation: "-rotate-6", y: "translate-y-4 md:translate-y-8", x: "-translate-x-12 md:-translate-x-32", z: "z-20" 
   },
   { 
     id: 3, 
     platform: 'LinkedIn', 
-    img: "https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=800&auto=format&fit=crop", 
+    img: "", 
     link: "https://linkedin.com/posts/YOUR_POST_ID", 
     rotation: "rotate-0", y: "translate-y-0", x: "translate-x-0", z: "z-30", scale: "scale-105 md:scale-110" 
   },
@@ -39,11 +39,9 @@ const socialPosts = [
   },
 ];
 
-// Replace these URLs with the actual AeroSoc profile pages
 const socialLinks = [
-  { name: 'Instagram', url: 'https://instagram.com/aerosocbitmesra' },
+  { name: 'Instagram', url: 'https://instagram.com/aerosoc_bitmesra' },
   { name: 'LinkedIn', url: 'https://linkedin.com/company/aerosocbitmesra' },
-  { name: 'YouTube', url: 'https://youtube.com/@aerosocbitmesra' },
   { name: 'Facebook', url: 'https://facebook.com/aerosocbitmesra' }
 ];
 
@@ -51,8 +49,6 @@ const Socials = () => {
   return (
     <section id="socials" className="py-32 bg-background relative overflow-hidden border-t border-white/5 flex flex-col items-center">
       
-      {/* Background Subtle Glow */}
-      <div className="absolute bottom-0 left-0 w-full h-3/4 bg-gradient-to-t from-accent/5 to-transparent pointer-events-none z-0" />
 
       {/* Heading */}
       <div className="relative z-10 text-center mb-16 md:mb-24 px-4">

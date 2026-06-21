@@ -4,6 +4,9 @@ import { MapPin, Phone, Mail } from 'lucide-react';
 const Footer = () => {
   return (
     <footer className="bg-background pt-24 pb-8 px-8 md:px-24 border-t border-white/5 relative z-10">
+            {/* Background Subtle Glow */}
+      <div className="absolute bottom-0 left-0 w-full h-3/4 bg-gradient-to-t from-accent/5 to-transparent pointer-events-none z-0" />
+
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
           

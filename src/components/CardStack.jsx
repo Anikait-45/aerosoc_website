@@ -9,34 +9,47 @@ const CardStack = ({ children, zIndex }) => {
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-      gsap.to(containerRef.current, {
-        scale: 0.85,
-        opacity: 0.25,
-        borderRadius: "24px",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: () => {
-            const isTall = containerRef.current.offsetHeight > window.innerHeight;
-            return isTall ? "bottom bottom" : "top top";
-          },
-          end: () => "+=" + window.innerHeight,
-          scrub: true,
-          pin: true,
-          pinSpacing: false,
-          invalidateOnRefresh: true, 
+      
+      // 1. Gently fade in the background container
+      gsap.fromTo(containerRef.current,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 85%", 
+          }
         }
-      });
+      );
+
+      // 2. The Text Reveal Engine (Finds all headings and staggers them up)
+      const textElements = containerRef.current.querySelectorAll('h1, h2, h3');
+      if (textElements.length > 0) {
+        gsap.fromTo(textElements,
+          { y: 60, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.2,
+            stagger: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top 75%",
+            }
+          }
+        );
+      }
+
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full relative transform-gpu bg-background origin-top shadow-[0_-25px_50px_rgba(0,0,0,0.8)]"
-      style={{ zIndex }}
-    >
+    <div ref={containerRef} className="relative w-full bg-black flex flex-col justify-center opacity-0" style={{ zIndex }}>
       {children}
     </div>
   );
