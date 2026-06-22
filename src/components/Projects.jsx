@@ -39,7 +39,7 @@ const Projects = () => {
   }, [totalSlides]);
 
   return (
-    <section id="projects" ref={sectionRef} className="h-screen overflow-hidden bg-background relative border-t border-white/5">
+    <section id="projects" ref={sectionRef} className="h-screen overflow-hidden bg-transparent ground relative border-t border-white/5">
       <div ref={trackRef} className="flex h-full items-center" style={{ width: `${totalSlides * 100}vw` }}>
         
         {/* Title Slide */}

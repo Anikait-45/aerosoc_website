@@ -12,9 +12,8 @@ const HorizontalSlider = ({ id, title, data, category }) => {
   useEffect(() => {
     let ctx = gsap.context(() => {
       const getScrollDistance = () => window.innerWidth * (totalSlides - 1);
-
-      // 1. The Horizontal Pin (Saved to a variable)
-      const scrollTween = gsap.to(trackRef.current, {
+      
+      gsap.to(trackRef.current, {
         x: () => -getScrollDistance(),
         ease: "none",
         scrollTrigger: {
@@ -25,54 +24,29 @@ const HorizontalSlider = ({ id, title, data, category }) => {
           invalidateOnRefresh: true,
         }
       });
-
-      // 2. Animate Main Title on Vertical Entry
-      const mainTitle = sectionRef.current.querySelectorAll('.section-title');
-      gsap.fromTo(mainTitle,
-        { y: 80, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: sectionRef.current, start: "top 80%" } }
-      );
-
-      // 3. MAGIC: Animate Individual Cards as they slide in from the right
-      const slideContents = gsap.utils.toArray('.slide-content');
-      slideContents.forEach((slide) => {
-        gsap.fromTo(slide,
-          { y: 60, opacity: 0 },
-          {
-            y: 0, opacity: 1, duration: 1, ease: "power3.out",
-            scrollTrigger: {
-              trigger: slide,
-              containerAnimation: scrollTween, // Links animation to sideways scroll
-              start: "left 85%", // Triggers when the text hits the right edge of your screen
-            }
-          }
-        );
-      });
-
     }, sectionRef);
     return () => ctx.revert();
   }, [totalSlides]);
 
   return (
-    <section id={id} ref={sectionRef} className="h-screen overflow-hidden bg-black relative border-t border-white/5">
+    <section id={id} ref={sectionRef} className="h-screen overflow-hidden bg-transparent relative border-t border-white/5 pointer-events-none">
       <div ref={trackRef} className="flex h-full items-center" style={{ width: `${totalSlides * 100}vw` }}>
         
         <div className="w-screen h-full flex flex-col justify-center px-8 md:px-24 flex-shrink-0">
-          {/* Added 'section-title' class */}
-          <h2 className="section-title text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
+          <h2 className="text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
             {title.split(' ')[0]} <br/> <span className="text-accent">{title.split(' ')[1]}</span>
           </h2>
         </div>
 
         {data.map((item, index) => (
           <div key={index} className="w-screen h-full flex items-center justify-center px-8 md:px-24 flex-shrink-0">
-            <div className="w-full max-w-4xl min-h-[450px] bg-surface border border-white/10 relative group hover:border-accent/50 transition-colors duration-500 overflow-hidden flex flex-col justify-end p-12">
-              <div className="absolute inset-0 bg-surface z-0">
+            {/* The physical card is made clickable with pointer-events-auto */}
+            <div className="pointer-events-auto w-full max-w-4xl min-h-[450px] bg-black/50 backdrop-blur-md border border-white/10 relative group transition-colors duration-500 overflow-hidden flex flex-col justify-end p-12">
+              <div className="absolute inset-0 bg-transparent z-0">
                 {item.img && <img src={item.img} alt={item.title} className="w-full h-full object-cover opacity-40 group-hover:opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />}
-                <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/90 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
               </div>
-              {/* Added 'slide-content' class */}
-              <div className="relative z-10 slide-content">
+              <div className="relative z-10">
                 <span className="absolute -top-16 right-0 text-5xl font-display font-black text-white/10 group-hover:text-accent/20 transition-colors duration-500">{`0${index + 1}`}</span>
                 <p className="text-accent font-display tracking-widest text-xs uppercase mb-4">{category}</p>
                 <h3 className="text-3xl md:text-5xl font-display font-bold text-white uppercase mb-6">{item.title}</h3>
@@ -83,10 +57,9 @@ const HorizontalSlider = ({ id, title, data, category }) => {
         ))}
 
         <div className="w-screen h-full flex items-center justify-center px-8 md:px-24 flex-shrink-0">
-          {/* Added 'slide-content' class */}
-          <div className="text-center slide-content">
+          <div className="text-center pointer-events-auto">
             <h3 className="text-3xl md:text-5xl font-display font-bold text-white uppercase mb-8">View The <br/> <span className="text-accent">Full Archive</span></h3>
-            <button className="px-6 py-3 border-2 border-accent text-accent hover:bg-accent hover:text-background font-display font-bold text-base tracking-widest transition-all duration-300">EXPLORE ALL</button>
+            <button className="px-6 py-3 border-2 border-accent text-accent hover:bg-accent hover:text-black font-display font-bold text-base tracking-widest transition-all duration-300">EXPLORE ALL</button>
           </div>
         </div>
       </div>

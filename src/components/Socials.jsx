@@ -47,7 +47,7 @@ const socialLinks = [
 
 const Socials = () => {
   return (
-    <section id="socials" className="py-32 bg-background relative overflow-hidden border-t border-white/5 flex flex-col items-center">
+    <section id="socials" className="py-32 bg-transparent relative overflow-hidden border-t border-white/5 flex flex-col items-center">
       
 
       {/* Heading */}

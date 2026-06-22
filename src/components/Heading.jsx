@@ -2,32 +2,18 @@ import React from 'react';
 
 const Heading = () => {
   return (
-    <section id="heading" className="relative h-screen flex flex-col justify-center items-start px-8 md:px-24 overflow-hidden bg-background">
+    <section id="heading" className="relative w-full h-screen flex flex-col justify-center overflow-hidden pointer-events-none px-8 md:px-24">
       
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[200vw] pointer-events-none z-0 flex">
-        <div className="animate-marquee whitespace-nowrap flex">
-          <h1 className="text-[120px] md:text-[250px] font-display font-black uppercase stroke-text pr-8">
-            AEROSOC BIT MESRA
-          </h1>
-          <h1 className="text-[120px] md:text-[250px] font-display font-black uppercase stroke-text pr-8">
-            AEROSOC BIT MESRA
-          </h1>
-        </div>
-      </div>
-
-      <div className="z-10 relative">
-        <h1 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black leading-[0.85] tracking-tighter uppercase text-white">
-          <div className="overflow-hidden">AEROSOC</div>
+      {/* Changed to items-start and text-left */}
+      <div className="relative z-10 flex flex-col items-start text-left pointer-events-auto w-full max-w-7xl mx-auto">
+        <h1 className="text-5xl md:text-8xl font-display font-black text-white uppercase tracking-tighter leading-tight mb-4">
+          AeroSoc <br /> <span className="text-accent">BIT Mesra</span>
         </h1>
-        
-        <p className="mt-6 md:mt-8 text-base md:text-xl text-gray-400 max-w-lg font-sans">
-          Welcome to AEROSOC LOL
+        <p className="text-gray-400 font-sans tracking-[0.3em] uppercase text-sm md:text-lg mt-6">
+          Pioneering the future of flight
         </p>
-
-        <button className="mt-8 md:mt-10 px-6 py-3 md:px-8 md:py-4 bg-accent text-background font-display font-bold text-sm md:text-lg tracking-wide hover:bg-white transition-colors duration-300 relative z-50 group">
-          EXPLORE OUR FLEET
-        </button>
       </div>
+
     </section>
   );
 };

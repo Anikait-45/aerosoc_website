@@ -20,8 +20,7 @@ const Gallery = () => {
       const trackWidth = trackRef.current.scrollWidth;
       const getScrollDistance = () => trackWidth - window.innerWidth;
 
-      // 1. Horizontal Scroll Tween
-      const scrollTween = gsap.to(trackRef.current, {
+      gsap.to(trackRef.current, {
         x: () => -getScrollDistance(),
         ease: "none",
         scrollTrigger: {
@@ -32,53 +31,32 @@ const Gallery = () => {
           invalidateOnRefresh: true,
         }
       });
-
-      // 2. Animate items sliding in from the right
-      const slideContents = gsap.utils.toArray('.slide-content');
-      slideContents.forEach((slide) => {
-        gsap.fromTo(slide,
-          { x: 50, opacity: 0 }, 
-          {
-            x: 0, opacity: 1, duration: 1.2, ease: "power3.out",
-            scrollTrigger: {
-              trigger: slide,
-              containerAnimation: scrollTween,
-              start: "left 90%", // Triggers right before it fully enters the screen
-            }
-          }
-        );
-      });
-
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="gallery" ref={sectionRef} className="h-screen overflow-hidden bg-black relative border-t border-white/5 flex items-center">
+    <section id="gallery" ref={sectionRef} className="h-screen overflow-hidden bg-transparent relative border-t border-white/5 flex items-center pointer-events-none">
       <div ref={trackRef} className="flex h-full items-center px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
         
         {galleryData.map((item) => (
-          // Added 'slide-content' class
-          <div key={item.id} className={`slide-content flex-shrink-0 flex flex-col ${item.size} ${item.yOffset}`}>
+          <div key={item.id} className={`flex-shrink-0 flex flex-col ${item.size} ${item.yOffset} pointer-events-auto`}>
             <p className="text-[9px] font-sans tracking-[0.25em] text-gray-500 uppercase mb-3 ml-1">{item.location}</p>
-            <div className="w-full aspect-[4/5] overflow-hidden bg-surface border border-white/5 relative group cursor-pointer">
+            <div className="w-full aspect-[4/5] overflow-hidden bg-black/50 backdrop-blur-sm border border-white/5 relative group cursor-pointer">
               <img src={item.img} alt={item.location} className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out" />
             </div>
           </div>
         ))}
 
-        {/* Added 'slide-content' class */}
-        <div className="slide-content flex-shrink-0 w-72 md:w-80 -translate-y-6 md:-translate-y-8">
+        <div className="flex-shrink-0 w-72 md:w-80 -translate-y-6 md:-translate-y-8 pointer-events-auto">
           <h3 className="text-xl md:text-2xl font-display text-white leading-relaxed font-light">
             "It doesn't matter where you start, it's <span className="text-accent italic font-normal">how you progress</span> from there."
           </h3>
           <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Faculty Advisor / Statement</p>
         </div>
 
-        {/* Invisible block pushes the quote to the center before scroll unlocks */}
-        <div className="flex-shrink-0 w-[30vw] pointer-events-none" />
-
+        <div className="flex-shrink-0 w-[40vw] pointer-events-none" />
       </div>
     </section>
   );

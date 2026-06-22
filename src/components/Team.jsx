@@ -51,7 +51,7 @@ const Team = () => {
   }, []);
 
   return (
-    <section id="team" ref={teamRef} className="py-32 px-8 md:px-24 bg-background relative border-t border-white/5">
+    <section id="team" ref={teamRef} className="py-32 px-8 md:px-24 bg-transparent ground relative border-t border-white/5">
       <div className="team-header mb-20 text-center">
         <h2 className="text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
           The <span className="text-accent">Squad</span>
