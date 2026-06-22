@@ -178,6 +178,10 @@
 
             controls.update(); renderer.render(scene, camera); requestAnimationFrame(animate);
         }
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            window.parent.postMessage({ type: 'iframe-scroll', deltaY: e.deltaY }, '*');
+        }, { passive: false });
         animate();
     </script>
 </body>
