@@ -13,10 +13,10 @@ const AboutUs = () => {
 
         <div className="w-full md:w-1/2 flex flex-col justify-center pointer-events-auto">
           <p className="text-gray-400 font-sans text-lg md:text-xl leading-relaxed mb-6">
-            Aerosoc was founded to bridge the gap between theoretical knowledge and practical aerospace engineering. We are a collective of driven students dedicated to pushing the boundaries of UAV design, flight dynamics, and embedded systems.
+            The Aerospace Society of BIT Mesra is a student-driven technical society dedicated to nurturing curiosity and innovation in the fields of aeronautics, astronautics, and space technology.
           </p>
           <p className="text-gray-400 font-sans text-lg md:text-xl leading-relaxed">
-            From conceptualization in the lab to successful maiden flights, our mission is to cultivate the next generation of innovators in the aerospace industry.
+            Founded with the vision of inspiring the next generation of aerospace engineers and thinkers, the society acts as a launchpad for students passionate about the skies and beyond.   
           </p>
         </div>
 

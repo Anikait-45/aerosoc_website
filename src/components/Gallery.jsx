@@ -38,7 +38,9 @@ const Gallery = () => {
 
   return (
     <section id="gallery" ref={sectionRef} className="h-screen overflow-hidden bg-transparent relative border-t border-white/5 flex items-center pointer-events-none">
-      <div ref={trackRef} className="flex h-full items-center px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
+      
+      {/* Added pb-24 md:pb-40 to shift the entire track upwards */}
+      <div ref={trackRef} className="flex h-full items-center pb-24 md:pb-40 px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
         
         {galleryData.map((item) => (
           <div key={item.id} className={`flex-shrink-0 flex flex-col ${item.size} ${item.yOffset} pointer-events-auto`}>
@@ -51,9 +53,9 @@ const Gallery = () => {
 
         <div className="flex-shrink-0 w-72 md:w-80 -translate-y-6 md:-translate-y-8 pointer-events-auto">
           <h3 className="text-xl md:text-2xl font-display text-white leading-relaxed font-light">
-            "It doesn't matter where you start, it's <span className="text-accent italic font-normal">how you progress</span> from there."
+            "One small step for man, <span className="text-accent italic font-normal">one giant leap for mankind."</span>
           </h3>
-          <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Faculty Advisor / Statement</p>
+          <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Neil Armstrong</p>
         </div>
 
         <div className="flex-shrink-0 w-[40vw] pointer-events-none" />

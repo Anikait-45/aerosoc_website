@@ -26,14 +26,14 @@ const socialPosts = [
   { 
     id: 4, 
     platform: 'Instagram', 
-    img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=800&auto=format&fit=crop", 
+    img: "", 
     link: "https://instagram.com/p/YOUR_POST_ID", 
     rotation: "rotate-6", y: "translate-y-4 md:translate-y-8", x: "translate-x-12 md:translate-x-32", z: "z-20" 
   },
   { 
     id: 5, 
     platform: 'Facebook', 
-    img: "https://images.unsplash.com/photo-1559297434-fae8a1916a79?q=80&w=800&auto=format&fit=crop", 
+    img: "", 
     link: "https://facebook.com/YOUR_POST_ID", 
     rotation: "rotate-12", y: "translate-y-12 md:translate-y-20", x: "translate-x-24 md:translate-x-64", z: "z-10" 
   },
