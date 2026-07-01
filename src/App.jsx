@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis'; 
 
+import Loader from './components/Loader';
 import NativeGalaxy from './components/NativeGalaxy'; 
 import Navigation from './components/Navigation';
 import Heading from './components/Heading';
@@ -18,138 +19,162 @@ gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const mainRef = useRef(null);
+  
+  const [mountWebsite, setMountWebsite] = useState(false);
+  const [startAnimations, setStartAnimations] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // ENGINE 1: Pure Lenis Momentum (Magnetic Snap Removed!)
   useEffect(() => {
-    // 1. CLEAN SMOOTH SCROLL INIT
     const lenis = new Lenis({
-      duration: 1.2, 
+      duration: 1.5, // Slightly increased for a heavier, more premium "Lando Norris" inertia
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
       smoothWheel: true,
       touchMultiplier: 2,
     });
 
+    if (!isLoaded) lenis.stop(); 
+    else lenis.start();
+
     lenis.on('scroll', ScrollTrigger.update);
-    
     const ticker = (time) => { lenis.raf(time * 1000); };
     gsap.ticker.add(ticker);
     gsap.ticker.lagSmoothing(0, 0);
 
-    // 2. MAGNETIC ENGINE
-    let scrollTimeout;
-    lenis.on('scroll', () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const sections = document.querySelectorAll('.snap-section');
-        let closestSection = null;
-        let minDistance = Infinity;
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(ticker);
+    };
+  }, [isLoaded]);
 
-        sections.forEach(section => {
-          const rect = section.getBoundingClientRect();
-          const distanceToTop = Math.abs(rect.top);
+  // ENGINE 2: Premium GSAP Interactions
+  useLayoutEffect(() => {
+    if (!startAnimations) return;
 
-          if (distanceToTop < minDistance) {
-            minDistance = distanceToTop;
-            closestSection = section;
+    let ctx = gsap.context(() => {
+      
+      // 1. Initial Heading Reveal (Fires after Loader)
+      const headingText = gsap.utils.toArray('#heading h1, #heading p');
+      if (headingText.length > 0) {
+        gsap.fromTo(headingText,
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.8, delay: 3.5, ease: "expo.out", stagger: 0.2 } 
+        );
+      }
+
+      // 2. THE GHOST STACK & PERFECT ENTRANCES
+      // We grab every section block
+      const sections = gsap.utils.toArray('.premium-section');
+
+      sections.forEach((section) => {
+        
+        // --- A. The Scrubbed Exit (Creates the depth effect) ---
+        gsap.to(section, {
+          opacity: 0,
+          y: -100, // Pushes it slightly up and away as you leave it
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top top", // Triggers when the section hits the very top of your screen
+            end: "bottom top", 
+            scrub: true, // Ties the animation directly to your scroll wheel
           }
         });
 
-        if (closestSection && minDistance > 10 && minDistance < window.innerHeight * 0.70) {
-          lenis.scrollTo(closestSection, {
-            duration: 1.2,
-            ease: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-          });
+        // --- B. The Perfect Entrance Timing ---
+        // Find all text elements inside this specific section (ignoring the main heading which is handled above)
+        const textElements = section.querySelectorAll('h1, h2, h3, p');
+        const isHeading = section.querySelector('#heading');
+
+        if (textElements.length > 0 && !isHeading) {
+          gsap.fromTo(textElements,
+            { y: 60, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1.5,
+              stagger: 0.1, // Makes the texts cascade in one after another
+              ease: "expo.out", // A very premium, fast-then-slow easing curve
+              scrollTrigger: {
+                trigger: section,
+                start: "top 85%", // Triggers right as it enters the screen to eliminate dead space
+                toggleActions: "play none none reverse"
+              }
+            }
+          );
         }
-      }, 250);
-    });
+      });
 
-    // 3. THE TEXT REVEAL ENGINE
-    const headingText = gsap.utils.toArray('#heading h1, #heading p');
-    if (headingText.length > 0) {
-      gsap.fromTo(headingText,
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1.5, delay: 3, ease: "power3.out" }
-      );
-    }
+    }, mainRef);
 
-    const otherText = gsap.utils.toArray('h1, h2, h3, p').filter(el => !el.closest('#heading'));
-    otherText.forEach((el) => {
-      gsap.fromTo(el,
-        { y: 60, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1.2,
-          delay: 1, 
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 60%", 
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-    });
-
-    // 4. *** THE LAYOUT RECALCULATION ENGINE (FIXES THE OVERLAP) ***
-    // This forces GSAP to fix its math after the images load and horizontal pins are set up.
     const refreshLayout = () => {
       ScrollTrigger.sort();
       ScrollTrigger.refresh();
     };
-
-    // Run once after React finishes its initial rendering
-    const layoutTimeout = setTimeout(refreshLayout, 500);
     
-    // Run again when all heavy images finally load from the network
+    const layoutTimeout = setTimeout(refreshLayout, 500);
     window.addEventListener('load', refreshLayout);
 
     return () => {
-      lenis.destroy();
-      gsap.ticker.remove(ticker);
-      clearTimeout(scrollTimeout);
+      ctx.revert();
       clearTimeout(layoutTimeout);
       window.removeEventListener('load', refreshLayout);
     };
-  }, []);
+  }, [startAnimations]);
 
   return (
-    <div className="min-h-screen text-white font-sans selection:bg-accent selection:text-black relative">
+    <div className="min-h-screen text-white font-sans selection:bg-accent selection:text-black relative bg-black">
       
-      <NativeGalaxy />
-      
-      <div className="relative z-[200]">
-        <Navigation />
-      </div>
-      
-      <main ref={mainRef} className="relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto">
-        
-        {/* Ensured Z-Index consistency across all blocks to prevent weird layering */}
-        <div className="relative z-[10] snap-section w-full"><Heading /></div>
-        <div className="relative z-[20] snap-section w-full"><AboutUs /></div>
-        
-        <div className="relative z-[30] bg-transparent snap-section w-full">
-          <UpcomingEvents />
-        </div>
+      {/* Scrollbar Killer */}
+      <style dangerouslySetInnerHTML={{__html: `
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
 
-        <div className="relative z-[40] bg-transparent snap-section w-full">
-          <Projects />
-        </div>
-        
-        {/* Ensured Team has a rigid z-index boundary */}
-        <div className="relative z-[50] bg-transparent snap-section w-full">
-          <Team />
-        </div>
-        
-        <div className="relative z-[60] bg-transparent snap-section w-full">
-          <Gallery />
-        </div>
+      {!isLoaded && (
+        <Loader 
+          onFlash={() => setMountWebsite(true)} 
+          onWipeComplete={() => setStartAnimations(true)} 
+          onComplete={() => setIsLoaded(true)} 
+        />
+      )}
+      
+      {mountWebsite && (
+        <>
+          <NativeGalaxy active={startAnimations} />
+          
+          <div className="relative z-[200]">
+            <Navigation />
+          </div>
+          
+          <main 
+            ref={mainRef} 
+            style={{ opacity: startAnimations ? 1 : 0 }} 
+            className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
+          >
+            
+            {/* CHANGED: Replaced 'snap-section' with 'premium-section' */}
+            <div className="relative z-[10] premium-section w-full"><Heading /></div>
+            <div className="relative z-[20] premium-section w-full"><AboutUs /></div>
+            
+           {/* REMOVED premium-section so the GSAP Ghost Stack doesn't break the horizontal pin math! */}
+<div className="relative z-[30] w-full"><UpcomingEvents /></div>
+            
+           {/* REMOVED premium-section so the GSAP Ghost Stack doesn't break the horizontal pin math! */}
+<div className="relative z-[30] w-full"><Projects /></div>
+            <div className="relative z-[50] w-full"><Team /></div>
+            {/* REMOVED premium-section so the GSAP Ghost Stack doesn't break the horizontal pin math! */}
+<div className="relative z-[30] w-full"><Gallery /></div>
+            
+            <div className="relative z-[70] w-full">
+              <Socials />
+              <Footer />
+            </div>
+            
+          </main>
+        </>
+      )}
 
-        <div className="relative z-[70] bg-transparent snap-section w-full">
-          <Socials />
-          <Footer />
-        </div>
-        
-      </main>
     </div>
   );
 }

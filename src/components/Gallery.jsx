@@ -5,10 +5,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const galleryData = [
-  { id: 1, location: "TEST SITE ALPHA, 2025", img: "https://images.unsplash.com/photo-1579820010410-c10411aaaa88?q=80&w=800", size: "w-48 md:w-64", yOffset: "-translate-y-16 md:-translate-y-24" },
-  { id: 2, location: "NATIONAL DRONE COMP, 2024", img: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=1200", size: "w-64 md:w-80", yOffset: "translate-y-20 md:translate-y-28" },
-  { id: 3, location: "AERODYNAMICS LAB, 2025", img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800", size: "w-52 md:w-72", yOffset: "-translate-y-6 md:-translate-y-8" },
-  { id: 4, location: "MAIDEN FLIGHT, 2023", img: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=1200", size: "w-64 md:w-80", yOffset: "translate-y-12 md:translate-y-16" },
+  { id: 1, location: "EXHIBITION, 2025", img: "/gimg1.jpeg", size: "w-48 md:w-64", yOffset: "-translate-y-16 md:-translate-y-24" },
+  { id: 2, location: "SKYBREACH, 2025", img: "/gimg2.jpeg", size: "w-64 md:w-80", yOffset: "translate-y-20 md:translate-y-28" },
+  { id: 3, location: "PROJECT EVALUATION, 2025", img: "/gimg3.jpeg", size: "w-52 md:w-72", yOffset: "-translate-y-6 md:-translate-y-8" },
+  { id: 4, location: "ALTITUDE ADVENTURE, 2025", img: "/gimg4.jpeg", size: "w-64 md:w-80", yOffset: "translate-y-12 md:translate-y-16" },
+  
 ];
 
 const Gallery = () => {
@@ -40,7 +41,7 @@ const Gallery = () => {
     <section id="gallery" ref={sectionRef} className="h-screen overflow-hidden bg-transparent relative border-t border-white/5 flex items-center pointer-events-none">
       
       {/* Added pb-24 md:pb-40 to shift the entire track upwards */}
-      <div ref={trackRef} className="flex h-full items-center pb-24 md:pb-40 px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
+      <div ref={trackRef} className="flex h-full items-center pb-20 md:pb-30 px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
         
         {galleryData.map((item) => (
           <div key={item.id} className={`flex-shrink-0 flex flex-col ${item.size} ${item.yOffset} pointer-events-auto`}>

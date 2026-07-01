@@ -19,11 +19,10 @@ const config = {
     introEndDist: 10
 };
 
-const NativeGalaxy = () => {
+const NativeGalaxy = ({ active = false }) => {
     const mountRef = useRef(null);
 
     useEffect(() => {
-        // Clear ghost renders
         while (mountRef.current.firstChild) {
             mountRef.current.removeChild(mountRef.current.firstChild);
         }
@@ -46,7 +45,6 @@ const NativeGalaxy = () => {
         controls.autoRotate = config.playing; 
         controls.autoRotateSpeed = 0.5;
         
-        // CRITICAL: Disables zoom so the user can scroll the website normally
         controls.enableZoom = false; 
         controls.enablePan = false;
 
@@ -152,18 +150,30 @@ const NativeGalaxy = () => {
 
         function animate() {
             const delta = clock.getDelta();
-            if(config.playing) material.uniforms.uTime.value += delta;
             
-            if (config.bigBang && introTime < config.bigBangDuration) {
-                introTime += delta;
-                let t = Math.min(introTime / config.bigBangDuration, 1.0);
-                let easeT = 1.0 - Math.pow(1.0 - t, 4.0); 
-                material.uniforms.uBigBang.value = easeT;
+            // THE FIX: If not active, the scene turns completely invisible (black screen)
+            scene.visible = active;
+
+            if (active) {
+                if(config.playing) material.uniforms.uTime.value += delta;
                 
-                const currentDist = config.introStartDist + (config.introEndDist - config.introStartDist) * easeT;
-                camera.position.setLength(currentDist);
+                if (config.bigBang && introTime < config.bigBangDuration) {
+                    introTime += delta;
+                    let t = Math.min(introTime / config.bigBangDuration, 1.0);
+                    let easeT = 1.0 - Math.pow(1.0 - t, 4.0); 
+                    material.uniforms.uBigBang.value = easeT;
+                    
+                    const currentDist = config.introStartDist + (config.introEndDist - config.introStartDist) * easeT;
+                    camera.position.setLength(currentDist);
+                } else {
+                    material.uniforms.uBigBang.value = 1.0;
+                }
             } else {
-                material.uniforms.uBigBang.value = 1.0;
+                // Ensure time is reset perfectly so the Big Bang starts on command
+                introTime = 0;
+                material.uniforms.uTime.value = 0;
+                material.uniforms.uBigBang.value = 0.0;
+                camera.position.setLength(config.introStartDist);
             }
 
             controls.update(); 
@@ -184,7 +194,7 @@ const NativeGalaxy = () => {
             renderer.dispose();
             controls.dispose();
         };
-    }, []);
+    }, [active]); 
 
     return (
         <div ref={mountRef} className="fixed inset-0 z-0 pointer-events-auto bg-black overflow-hidden" />

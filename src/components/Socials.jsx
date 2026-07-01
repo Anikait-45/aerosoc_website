@@ -5,36 +5,36 @@ const socialPosts = [
   { 
     id: 1, 
     platform: 'Instagram', 
-    img: "", 
-    link: "https://www.instagram.com/p/DV6PVrAk7A6/?igsh=Ynl2cnhmOWhnOG14", 
+    img: "/instapost1.jpeg", 
+    link: "https://www.instagram.com/p/DQVo3kQgsF9/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
     rotation: "-rotate-12", y: "translate-y-12 md:translate-y-20", x: "-translate-x-24 md:-translate-x-64", z: "z-10" 
   },
   { 
     id: 2, 
-    platform: 'YouTube', 
-    img: "", 
-    link: "https://youtube.com/watch?v=YOUR_VIDEO_ID", 
+    platform: 'Instagram', 
+    img: "/instapost2.jpeg", 
+    link: "https://www.instagram.com/p/DTsB_MNE0It/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
     rotation: "-rotate-6", y: "translate-y-4 md:translate-y-8", x: "-translate-x-12 md:-translate-x-32", z: "z-20" 
   },
   { 
     id: 3, 
-    platform: 'LinkedIn', 
-    img: "", 
-    link: "https://linkedin.com/posts/YOUR_POST_ID", 
+    platform: 'Instagram', 
+    img: "/instapost3.jpeg", 
+    link: "https://www.instagram.com/p/DV6PVrAk7A6/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA== ", 
     rotation: "rotate-0", y: "translate-y-0", x: "translate-x-0", z: "z-30", scale: "scale-105 md:scale-110" 
   },
   { 
     id: 4, 
     platform: 'Instagram', 
-    img: "", 
-    link: "https://instagram.com/p/YOUR_POST_ID", 
+    img: "/instapost4.jpeg", 
+    link: "https://www.instagram.com/p/DWMCIOplMWI/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
     rotation: "rotate-6", y: "translate-y-4 md:translate-y-8", x: "translate-x-12 md:translate-x-32", z: "z-20" 
   },
   { 
     id: 5, 
-    platform: 'Facebook', 
-    img: "", 
-    link: "https://facebook.com/YOUR_POST_ID", 
+    platform: 'Instagram', 
+    img: "/instapost5.jpeg", 
+    link: "https://www.instagram.com/p/DXCTCI-FAUz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
     rotation: "rotate-12", y: "translate-y-12 md:translate-y-20", x: "translate-x-24 md:translate-x-64", z: "z-10" 
   },
 ];
@@ -78,11 +78,8 @@ const Socials = () => {
               </div>
             )}
             
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center backdrop-blur-sm">
-              <span className="text-accent font-display font-bold uppercase tracking-widest text-xs mb-2">{post.platform}</span>
-              <span className="text-white font-sans text-sm tracking-widest uppercase border-b border-white/30 pb-1">View Post</span>
-            </div>
+            {/* Overlay completely removed here! */}
+            
           </a>
         ))}
       </div>

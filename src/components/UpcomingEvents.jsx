@@ -74,7 +74,7 @@ const UpcomingEvents = () => {
       gsap.fromTo(skyObj, 
         { val: 0 }, 
         {
-          val: 2500, // Make sure to set this back to 2500!
+          val: 250, // Make sure to set this back to 2500!
           duration: 2.5,
           ease: "power2.out",
           scrollTrigger: {
@@ -118,7 +118,7 @@ const UpcomingEvents = () => {
           <div className="text-center mb-12 pointer-events-auto flex flex-col items-center justify-center w-full">
               
               {/* 1. Added 'aero-element' class to the logo wrapper */}
-              <div className="aero-element h-24 md:h-32 lg:h-[100px] w-full flex items-center justify-center overflow-hidden z-10 relative opacity-0">
+              <div className="aero-element h-24 md:h-32 lg:h-100 w-full flex items-center justify-center overflow-hidden z-10 relative opacity-0">
                 <img 
                   src="/aerocon26-logo.png" 
                   alt="Aerocon 26" 
@@ -141,13 +141,13 @@ const UpcomingEvents = () => {
             <h2 className="text-5xl md:text-[100px] font-black text-white uppercase tracking-wider leading-none" style={{ fontFamily: "'Orbitron', sans-serif" }}>
               SKY <span className="text-accent">BREACH</span>
             </h2>
-            <p className="text-accent font-sans tracking-[0.3em] uppercase text-sm mt-4">Technical Hackathon • Winter</p>
+            <p className="text-accent font-sans tracking-[0.3em] uppercase text-sm mt-4">ROCKETRY COMPETITION • Winter</p>
           </div>
 
           <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center pointer-events-auto">
             <div className="w-full aspect-video bg-black/50 backdrop-blur-md border border-white/10 p-2 group overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=1200" 
+                src="/skybreach2.jpeg" 
                 alt="Sky Breach" 
                 className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
               />
@@ -156,7 +156,7 @@ const UpcomingEvents = () => {
             <div className="flex flex-col justify-center">
               {/* Changed <p> to <div> so the global engine ignores it during the horizontal slide */}
               <div className="text-gray-400 font-sans text-lg leading-relaxed mb-6">
-                A 48-hour intensive hardware and software hackathon. Teams are tasked with building autonomous target detection algorithms, programming flight controllers from scratch, and pushing embedded systems to the edge of failure.
+                Skybreach is an exciting model rocketry competition designed for enthusiasts and engineers to showcase their technical expertise. Participants will have the opportunity to demonstrate their mastery of aerospace principles, including advanced propulsion systems, flight dynamics, and the complexities of atmospheric re-entry and component recovery . This event invites teams to push the limits of their innovation and engineering capabilities in a challenging, hands-on environment.
               </div>
               
               <div className="flex flex-row gap-6 flex-wrap mt-2">

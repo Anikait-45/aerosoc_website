@@ -5,7 +5,7 @@ const navLinks = [
   { name: 'Home', id: 'heading', icon: Target },
   { name: 'About Us', id: 'about', icon: Terminal },
   { name: 'Events', id: 'events', icon: Calendar },
-  { name: 'Workshops', id: 'workshops', icon: Cpu },
+  // { name: 'Workshops', id: 'workshops', icon: Cpu },
   { name: 'Projects', id: 'projects', icon: Rocket },
   { name: 'Team', id: 'team', icon: Users },
   { name: 'Gallery', id: 'gallery', icon: Aperture },
