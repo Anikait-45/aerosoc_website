@@ -24,10 +24,9 @@ function App() {
   const [startAnimations, setStartAnimations] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // ENGINE 1: Pure Lenis Momentum (Magnetic Snap Removed!)
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.5, // Slightly increased for a heavier, more premium "Lando Norris" inertia
+      duration: 1.5, 
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
       smoothWheel: true,
       touchMultiplier: 2,
@@ -47,42 +46,35 @@ function App() {
     };
   }, [isLoaded]);
 
-  // ENGINE 2: Premium GSAP Interactions
   useLayoutEffect(() => {
     if (!startAnimations) return;
 
     let ctx = gsap.context(() => {
       
-      // 1. Initial Heading Reveal (Fires after Loader)
       const headingText = gsap.utils.toArray('#heading h1, #heading p');
       if (headingText.length > 0) {
         gsap.fromTo(headingText,
           { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.8, delay: 3.5, ease: "expo.out", stagger: 0.2 } 
+          { y: 0, opacity: 1, duration: 1.8, delay: 3.0, ease: "expo.out", stagger: 0.2 } 
         );
       }
 
-      // 2. THE GHOST STACK & PERFECT ENTRANCES
-      // We grab every section block
       const sections = gsap.utils.toArray('.premium-section');
 
       sections.forEach((section) => {
         
-        // --- A. The Scrubbed Exit (Creates the depth effect) ---
         gsap.to(section, {
           opacity: 0,
-          y: -100, // Pushes it slightly up and away as you leave it
+          y: -100,
           ease: "none",
           scrollTrigger: {
             trigger: section,
-            start: "top top", // Triggers when the section hits the very top of your screen
+            start: "top top", 
             end: "bottom top", 
-            scrub: true, // Ties the animation directly to your scroll wheel
+            scrub: true, 
           }
         });
 
-        // --- B. The Perfect Entrance Timing ---
-        // Find all text elements inside this specific section (ignoring the main heading which is handled above)
         const textElements = section.querySelectorAll('h1, h2, h3, p');
         const isHeading = section.querySelector('#heading');
 
@@ -93,11 +85,11 @@ function App() {
               y: 0,
               opacity: 1,
               duration: 1.5,
-              stagger: 0.1, // Makes the texts cascade in one after another
-              ease: "expo.out", // A very premium, fast-then-slow easing curve
+              stagger: 0.1, 
+              ease: "expo.out", 
               scrollTrigger: {
                 trigger: section,
-                start: "top 85%", // Triggers right as it enters the screen to eliminate dead space
+                start: "top 85%", 
                 toggleActions: "play none none reverse"
               }
             }
@@ -153,17 +145,13 @@ function App() {
             className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
           >
             
-            {/* CHANGED: Replaced 'snap-section' with 'premium-section' */}
             <div className="relative z-[10] premium-section w-full"><Heading /></div>
             <div className="relative z-[20] premium-section w-full"><AboutUs /></div>
             
-           {/* REMOVED premium-section so the GSAP Ghost Stack doesn't break the horizontal pin math! */}
 <div className="relative z-[30] w-full"><UpcomingEvents /></div>
             
-           {/* REMOVED premium-section so the GSAP Ghost Stack doesn't break the horizontal pin math! */}
 <div className="relative z-[30] w-full"><Projects /></div>
             <div className="relative z-[50] w-full"><Team /></div>
-            {/* REMOVED premium-section so the GSAP Ghost Stack doesn't break the horizontal pin math! */}
 <div className="relative z-[30] w-full"><Gallery /></div>
             
             <div className="relative z-[70] w-full">
