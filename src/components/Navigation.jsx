@@ -6,7 +6,7 @@ const navLinks = [
   { name: 'About Us', id: 'about', icon: Terminal },
   { name: 'Events', id: 'events', icon: Calendar },
   // { name: 'Workshops', id: 'workshops', icon: Cpu },
-  { name: 'Projects', id: 'projects', icon: Rocket },
+  // { name: 'Projects', id: 'projects', icon: Rocket },
   { name: 'Team', id: 'team', icon: Users },
   { name: 'Gallery', id: 'gallery', icon: Aperture },
   { name: 'Socials', id: 'socials', icon: Share2 }
@@ -29,9 +29,9 @@ const Navigation = () => {
       className="fixed top-0 right-0 h-screen z-[200] flex flex-col py-8 bg-black/20 backdrop-blur-xl border-l border-white/5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ width: isHovered ? '11.5rem' : '4rem' }}
+      style={{ width: isHovered ? '11rem' : '4rem' }}
     >
-      <div className="w-full flex justify-end px-3 mb-16">
+      <div className="w-full flex justify-end px-3 mb-30">
         <div className="flex items-center gap-4 cursor-pointer">
           <span className={`text-white font-display font-bold tracking-[0.2em] text-xs uppercase overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-right whitespace-nowrap ${isHovered ? 'w-24 opacity-100' : 'w-0 opacity-0'}`}>
             AEROSOC

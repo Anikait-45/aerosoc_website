@@ -9,7 +9,8 @@ import Navigation from './components/Navigation';
 import Heading from './components/Heading';
 import AboutUs from './components/AboutUs';
 import UpcomingEvents from './components/UpcomingEvents';
-import Projects from './components/Projects';
+import FootfallGraph from './components/FootfallGraph';
+// import Projects from './components/Projects';
 import Team from './components/Team';
 import Gallery from './components/Gallery';
 import Socials from './components/Socials';
@@ -149,8 +150,9 @@ function App() {
             <div className="relative z-[20] premium-section w-full"><AboutUs /></div>
             
 <div className="relative z-[30] w-full"><UpcomingEvents /></div>
+<div className="relative z-[35] w-full"><FootfallGraph /></div>
             
-<div className="relative z-[30] w-full"><Projects /></div>
+{/* <div className="relative z-[30] w-full"><Projects /></div> */}
             <div className="relative z-[50] w-full"><Team /></div>
 <div className="relative z-[30] w-full"><Gallery /></div>
             

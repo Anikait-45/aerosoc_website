@@ -59,7 +59,12 @@ const Gallery = () => {
           <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Neil Armstrong</p>
         </div>
 
-        <div className="flex-shrink-0 w-[40vw] pointer-events-none" />
+        {/* MODIFIED ONLY THIS DIV: Added flex, alignment, and the minimalist button */}
+        <div className="flex-shrink-0 w-[45vw] flex items-center justify-end  pointer-events-auto">
+          <a href="#" className="px-6 py-2 border border-white/20 text-white/60 hover:text-white hover:border-white text-[10px] uppercase tracking-widest font-sans rounded-full transition-all duration-300">
+            View Archive
+          </a>
+        </div>
       </div>
     </section>
   );
