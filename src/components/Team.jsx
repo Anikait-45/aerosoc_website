@@ -8,7 +8,7 @@ const studentMembers = [
   { name: "Adarsh", role: "President", img: "/President.jpeg" },
   { name: "Prakriti", role: "Vice President", img: "/VicePresident.jpeg" },
   { name: "Aniket", role: "Vice President", img: "/VicePresident2.jpeg" },
-  { name: "Ananya", role: "General Secretary", img: "/GeneralSecretary.jpeg" },
+  { name: "Krishnan", role: "General Secretary", img: "/GeneralSecretary.jpeg" },
   { name: "Abhyuday", role: "Joint Secretary", img: "/JointSecretary.jpeg" },
   { name: "Rajdeep", role: "Joint Secretary", img: "" },
 ];
