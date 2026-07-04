@@ -6,7 +6,7 @@ import Lenis from 'lenis';
 import Loader from './components/Loader';
 import NativeGalaxy from './components/NativeGalaxy'; 
 import Navigation from './components/Navigation';
-import Heading from './components/Heading';
+// import Heading from './components/Heading';
 import AboutUs from './components/AboutUs';
 import UpcomingEvents from './components/UpcomingEvents';
 import FootfallGraph from './components/FootfallGraph';
@@ -15,6 +15,10 @@ import Team from './components/Team';
 import Gallery from './components/Gallery';
 import Socials from './components/Socials';
 import Footer from './components/Footer';
+
+// HYPERSPEED IMPORTS
+import Landing from './components/Landing';
+import WarpSpeed from './components/WarpSpeed';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,6 +29,44 @@ function App() {
   const [startAnimations, setStartAnimations] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // HYPERSPEED REALM STATES
+  const [activeRealm, setActiveRealm] = useState('landing');
+  const [isWarping, setIsWarping] = useState(false);
+  const [warpDirection, setWarpDirection] = useState('backward');
+  
+  // THE NEW 3-SECOND DELAY FLAG
+  const [warpDelay, setWarpDelay] = useState(false);
+
+  // WARP TRIGGER FUNCTIONS
+  const triggerWarpToMain = () => {
+    setWarpDirection('backward'); 
+    setIsWarping(true);
+    setWarpDelay(true); // Tell GSAP to wait 3 seconds before showing text
+    
+    setTimeout(() => {
+      setActiveRealm('main'); 
+      
+      // Auto-scroll to About Us immediately
+      setTimeout(() => {
+        const aboutSection = document.getElementById('about');
+        if (aboutSection) aboutSection.scrollIntoView({ behavior: 'instant' });
+      }, 50);
+
+      // Disable the delay flag after the sequence completes
+      setTimeout(() => setWarpDelay(false), 4000); 
+    }, 2100); 
+  };
+
+  const triggerWarpToLanding = () => {
+    setWarpDirection('forward'); 
+    setIsWarping(true);
+    
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      setActiveRealm('landing'); 
+    }, 2100);
+  };
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.5, 
@@ -33,7 +75,7 @@ function App() {
       touchMultiplier: 2,
     });
 
-    if (!isLoaded) lenis.stop(); 
+    if (!isLoaded || activeRealm === 'landing') lenis.stop(); 
     else lenis.start();
 
     lenis.on('scroll', ScrollTrigger.update);
@@ -45,10 +87,10 @@ function App() {
       lenis.destroy();
       gsap.ticker.remove(ticker);
     };
-  }, [isLoaded]);
+  }, [isLoaded, activeRealm]);
 
   useLayoutEffect(() => {
-    if (!startAnimations) return;
+    if (!startAnimations || activeRealm !== 'main') return;
 
     let ctx = gsap.context(() => {
       
@@ -56,7 +98,7 @@ function App() {
       if (headingText.length > 0) {
         gsap.fromTo(headingText,
           { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.8, delay: 3.0, ease: "expo.out", stagger: 0.2 } 
+          { y: 0, opacity: 1, duration: 1.8, delay: warpDelay ? 3.0 : 1.0, ease: "expo.out", stagger: 0.2 } 
         );
       }
 
@@ -87,6 +129,7 @@ function App() {
               opacity: 1,
               duration: 1.5,
               stagger: 0.1, 
+              delay: warpDelay ? 3.0 : 0, // <--- MAGIC! Exact 3 second wait for About Us text.
               ease: "expo.out", 
               scrollTrigger: {
                 trigger: section,
@@ -113,12 +156,11 @@ function App() {
       clearTimeout(layoutTimeout);
       window.removeEventListener('load', refreshLayout);
     };
-  }, [startAnimations]);
+  }, [startAnimations, activeRealm, warpDelay]);
 
   return (
     <div className="min-h-screen text-white font-sans selection:bg-accent selection:text-black relative bg-black">
       
-      {/* Scrollbar Killer */}
       <style dangerouslySetInnerHTML={{__html: `
         ::-webkit-scrollbar { display: none; }
         * { -ms-overflow-style: none; scrollbar-width: none; }
@@ -134,34 +176,45 @@ function App() {
       
       {mountWebsite && (
         <>
-          <NativeGalaxy active={startAnimations} />
-          
+          <WarpSpeed isWarping={isWarping} direction={warpDirection} onComplete={() => setIsWarping(false)} />
+
           <div className="relative z-[200]">
-            <Navigation />
+            <Navigation onGoHome={triggerWarpToLanding} />
           </div>
-          
-          <main 
-            ref={mainRef} 
-            style={{ opacity: startAnimations ? 1 : 0 }} 
-            className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
-          >
-            
-            <div className="relative z-[10] premium-section w-full"><Heading /></div>
-            <div className="relative z-[20] premium-section w-full"><AboutUs /></div>
-            
-<div className="relative z-[30] w-full"><UpcomingEvents /></div>
-<div className="relative z-[35] w-full"><FootfallGraph /></div>
-            
-{/* <div className="relative z-[30] w-full"><Projects /></div> */}
-            <div className="relative z-[50] w-full"><Team /></div>
-<div className="relative z-[30] w-full"><Gallery /></div>
-            
-            <div className="relative z-[70] w-full">
-              <Socials />
-              <Footer />
-            </div>
-            
-          </main>
+
+          {activeRealm === 'landing' && (
+            <Landing onInitiate={triggerWarpToMain} />
+          )}
+
+          {activeRealm === 'main' && (
+            <>
+              <NativeGalaxy active={startAnimations} />
+              
+              <main 
+                ref={mainRef} 
+                style={{ opacity: startAnimations ? 1 : 0 }} 
+                className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
+              >
+                
+                {/* <div id="heading" className="relative z-[10] premium-section w-full"><Heading /></div> */}
+                
+                <div id="about" className="relative z-[20] premium-section w-full"><AboutUs onGoBack={triggerWarpToLanding} /></div>
+                
+                <div className="relative z-[30] w-full"><UpcomingEvents /></div>
+                <div className="relative z-[35] w-full"><FootfallGraph /></div>
+                
+                {/* <div className="relative z-[30] w-full"><Projects /></div> */}
+                <div className="relative z-[50] w-full"><Team /></div>
+                <div className="relative z-[30] w-full"><Gallery /></div>
+                
+                <div className="relative z-[70] w-full">
+                  <Socials />
+                  <Footer />
+                </div>
+                
+              </main>
+            </>
+          )}
         </>
       )}
 
