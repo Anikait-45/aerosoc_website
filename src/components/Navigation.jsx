@@ -12,11 +12,19 @@ const navLinks = [
   { name: 'Socials', id: 'socials', icon: Share2 }
 ];
 
-const Navigation = () => {
+// ACCEPT THE PROP HERE
+const Navigation = ({ onGoHome }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const scrollToSection = (id) => {
     setIsHovered(false);
+
+    // INTERCEPT THE HOME CLICK TO TRIGGER HYPERSPEED
+    if (id === 'heading') {
+      if (onGoHome) onGoHome();
+      return; // Stop the regular scrolling action
+    }
+
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -25,7 +33,6 @@ const Navigation = () => {
 
   return (
     <div 
-      // Changed bg-black/80 to bg-black/20 and kept backdrop-blur-xl for the glass effect
       className="fixed top-0 right-0 h-screen z-[200] flex flex-col py-8 bg-black/20 backdrop-blur-xl border-l border-white/5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
