@@ -56,7 +56,8 @@ function App() {
       if (headingText.length > 0) {
         gsap.fromTo(headingText,
           { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.8, delay: 3.0, ease: "expo.out", stagger: 0.2 } 
+          // EXACT FIX: Changed delay to 4.0 to match the Big Bang simulation
+          { y: 0, opacity: 1, duration: 1.8, delay: 4.0, ease: "expo.out", stagger: 0.2 } 
         );
       }
 
@@ -149,12 +150,12 @@ function App() {
             <div className="relative z-[10] premium-section w-full"><Heading /></div>
             <div className="relative z-[20] premium-section w-full"><AboutUs /></div>
             
-<div className="relative z-[30] w-full"><UpcomingEvents /></div>
-<div className="relative z-[35] w-full"><FootfallGraph /></div>
+            <div className="relative z-[30] w-full"><UpcomingEvents /></div>
+            <div className="relative z-[35] w-full"><FootfallGraph /></div>
             
-{/* <div className="relative z-[30] w-full"><Projects /></div> */}
+            {/* <div className="relative z-[30] w-full"><Projects /></div> */}
             <div className="relative z-[50] w-full"><Team /></div>
-<div className="relative z-[30] w-full"><Gallery /></div>
+            <div className="relative z-[30] w-full"><Gallery /></div>
             
             <div className="relative z-[70] w-full">
               <Socials />
