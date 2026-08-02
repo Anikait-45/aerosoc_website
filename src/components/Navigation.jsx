@@ -12,23 +12,48 @@ const navLinks = [
   { name: 'Socials', id: 'socials', icon: Share2 }
 ];
 
-// ACCEPT THE PROP HERE
 const Navigation = ({ onGoHome }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const scrollToSection = (id) => {
     setIsHovered(false);
 
-    // INTERCEPT THE HOME CLICK TO TRIGGER HYPERSPEED
+    // 1. HOME CLICK: Force absolute top (0, 0) for crisp satellite state
     if (id === 'heading') {
       if (onGoHome) onGoHome();
-      return; // Stop the regular scrolling action
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
 
     const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (!element) return;
+
+    // 2. ABOUT US CLICK: Three-Stage Touchdown Timers
+    // Catches both quick arrivals (Team/Events) and long-distance arrivals (Gallery/Socials)
+    if (id === 'about') {
+      const getExactCenter = () => {
+        const elementTop = element.getBoundingClientRect().top + window.scrollY;
+        return elementTop + (element.offsetHeight - window.innerHeight) / 2;
+      };
+
+      // Stage 1: Immediate launch
+      window.scrollTo({ top: getExactCenter(), behavior: 'smooth' });
+
+      // Stage 2: Catches medium-distance arrivals (Events / Team) at 750ms
+      setTimeout(() => {
+        window.scrollTo({ top: getExactCenter(), behavior: 'smooth' });
+      }, 750);
+
+      // Stage 3: Catches long-distance arrivals (Gallery / Socials) after full travel at 1500ms
+      setTimeout(() => {
+        window.scrollTo({ top: getExactCenter(), behavior: 'smooth' });
+      }, 1500);
+
+      return;
     }
+
+    // 3. ALL OTHER SECTIONS
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -39,7 +64,7 @@ const Navigation = ({ onGoHome }) => {
       style={{ width: isHovered ? '11rem' : '4rem' }}
     >
       <div className="w-full flex justify-end px-3 mb-30">
-        <div className="flex items-center gap-4 cursor-pointer">
+        <div className="flex items-center gap-4 cursor-pointer" onClick={() => scrollToSection('heading')}>
           <span className={`text-white font-display font-bold tracking-[0.2em] text-xs uppercase overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-right whitespace-nowrap ${isHovered ? 'w-24 opacity-100' : 'w-0 opacity-0'}`}>
             AEROSOC
           </span>

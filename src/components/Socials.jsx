@@ -1,41 +1,44 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Replace the 'link' with the URL to the specific post, and 'img' with your actual image path
+gsap.registerPlugin(ScrollTrigger);
+
 const socialPosts = [
   { 
     id: 1, 
     platform: 'Instagram', 
     img: "/instapost1.jpeg", 
     link: "https://www.instagram.com/p/DQVo3kQgsF9/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
-    rotation: "-rotate-12", y: "translate-y-12 md:translate-y-20", x: "-translate-x-24 md:-translate-x-64", z: "z-10" 
+    rotate: -12, xPercent: -110, yPercent: 20, z: "z-10" 
   },
   { 
     id: 2, 
     platform: 'Instagram', 
     img: "/instapost2.jpeg", 
     link: "https://www.instagram.com/p/DTsB_MNE0It/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
-    rotation: "-rotate-6", y: "translate-y-4 md:translate-y-8", x: "-translate-x-12 md:-translate-x-32", z: "z-20" 
+    rotate: -6, xPercent: -55, yPercent: 10, z: "z-20" 
   },
   { 
     id: 3, 
     platform: 'Instagram', 
     img: "/instapost3.jpeg", 
     link: "https://www.instagram.com/p/DV6PVrAk7A6/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA== ", 
-    rotation: "rotate-0", y: "translate-y-0", x: "translate-x-0", z: "z-30", scale: "scale-105 md:scale-110" 
+    rotate: 0, xPercent: 0, yPercent: 0, z: "z-30", scale: 1.1 
   },
   { 
     id: 4, 
     platform: 'Instagram', 
     img: "/instapost4.jpeg", 
     link: "https://www.instagram.com/p/DWMCIOplMWI/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
-    rotation: "rotate-6", y: "translate-y-4 md:translate-y-8", x: "translate-x-12 md:translate-x-32", z: "z-20" 
+    rotate: 6, xPercent: 55, yPercent: 10, z: "z-20" 
   },
   { 
     id: 5, 
     platform: 'Instagram', 
     img: "/instapost5.jpeg", 
     link: "https://www.instagram.com/p/DXCTCI-FAUz/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==", 
-    rotation: "rotate-12", y: "translate-y-12 md:translate-y-20", x: "translate-x-24 md:translate-x-64", z: "z-10" 
+    rotate: 12, xPercent: 110, yPercent: 20, z: "z-10" 
   },
 ];
 
@@ -46,45 +49,92 @@ const socialLinks = [
 ];
 
 const Socials = () => {
-  return (
-    <section id="socials" className="py-32 bg-transparent relative overflow-hidden border-t border-white/5 flex flex-col items-center">
-      
+  const sectionRef = useRef(null);
+  const cardsContainerRef = useRef(null);
+  const cardWrappersRef = useRef([]);
 
-      {/* Heading */}
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: cardsContainerRef.current,
+          start: "top 65%",
+          end: "center 35%",
+          scrub: 1,
+        }
+      });
+
+      socialPosts.forEach((post, i) => {
+        const wrapper = cardWrappersRef.current[i];
+        if (!wrapper) return;
+
+        tl.fromTo(
+          wrapper,
+          {
+            xPercent: 0,
+            yPercent: 0,
+            rotation: 0,
+            scale: 1,
+          },
+          {
+            xPercent: post.xPercent,
+            yPercent: post.yPercent,
+            rotation: post.rotate,
+            scale: post.scale || 1,
+            ease: "power2.out",
+          },
+          0
+        );
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section 
+      id="socials" 
+      ref={sectionRef} 
+      className="py-32 bg-transparent relative overflow-hidden border-t border-white/5 flex flex-col items-center"
+    >
       <div className="relative z-10 text-center mb-16 md:mb-24 px-4">
         <h2 className="text-5xl md:text-8xl font-display font-black text-white uppercase tracking-tighter">
           What's Up <br/> <span className="text-accent">On Socials</span>
         </h2>
       </div>
 
-      {/* Fanned Cards Container */}
-      <div className="relative w-full max-w-5xl h-[300px] md:h-[450px] flex items-center justify-center mb-24 z-10">
-        {socialPosts.map((post) => (
-          <a 
-            key={post.id} 
-            href={post.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`absolute w-32 h-48 md:w-64 md:h-96 rounded-2xl md:rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-all duration-500 ease-out group 
-              ${post.rotation} ${post.y} ${post.x} ${post.z} ${post.scale || ''} 
-              hover:-translate-y-10 hover:z-50 hover:rotate-0 hover:scale-110 md:hover:scale-125 hover:border-accent/50 cursor-pointer bg-surface`}
+      <div 
+        ref={cardsContainerRef}
+        className="relative w-full max-w-5xl h-[300px] md:h-[450px] flex items-center justify-center mb-24 z-10"
+      >
+        {socialPosts.map((post, index) => (
+          <div
+            key={post.id}
+            ref={(el) => (cardWrappersRef.current[index] = el)}
+            className={`absolute w-32 h-48 md:w-64 md:h-96 ${post.z}`}
           >
-            {/* Image Layer */}
-            {post.img ? (
-              <img src={post.img} alt={`${post.platform} Post ${post.id}`} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-surface/50 text-white/20 font-display font-black text-4xl">
-                {post.id}
-              </div>
-            )}
-            
-            {/* Overlay completely removed here! */}
-            
-          </a>
+            <a 
+              href={post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full h-full rounded-2xl md:rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] transition-all duration-300 ease-out group hover:-translate-y-6 md:hover:-translate-y-10 hover:scale-105 hover:border-accent/50 cursor-pointer bg-surface"
+            >
+              {post.img ? (
+                <img 
+                  src={post.img} 
+                  alt={`${post.platform} Post ${post.id}`} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-surface/50 text-white/20 font-display font-black text-4xl">
+                  {post.id}
+                </div>
+              )}
+            </a>
+          </div>
         ))}
       </div>
 
-      {/* Text Links Section */}
       <div className="relative z-10 text-center flex flex-col items-center">
         <h3 className="text-2xl md:text-3xl font-display font-medium text-white mb-8">
           Follow AeroSoc on social media
@@ -105,7 +155,6 @@ const Socials = () => {
           ))}
         </div>
       </div>
-
     </section>
   );
 };

@@ -125,14 +125,10 @@ const FootfallGraph = () => {
 
           <line className="axis-line stroke-white/40" x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} strokeWidth="2" />
           
-          <line className="axis-line stroke-white/40" x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} strokeWidth="2" />
-
-          <text className="label-text fill-white text-[12px] font-display font-black tracking-[0.2em] uppercase origin-center" transform={`translate(${paddingLeft - 80}, ${(paddingTop + chartHeight / 2)}) rotate(-90)`} textAnchor="middle">
-            FOOTFALL OF PAST EVENTS
-          </text>
+          <line className="axis-line stroke-white/40" x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} strokeWidth="2" />        
 
           <text className="label-text fill-white text-[24px] font-display font-black tracking-[0.3em] uppercase origin-center" x={paddingLeft + chartWidth / 2} y={height - paddingBottom + 70} textAnchor="middle">
-            FOOTFALL OVER THE YEARS
+            EVENT FOOTFALL
           </text>
 
           <path ref={pathRef} d={pathD} fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />

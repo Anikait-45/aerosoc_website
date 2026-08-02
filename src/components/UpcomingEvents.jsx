@@ -28,14 +28,13 @@ const UpcomingEvents = () => {
       .to({}, { duration: 1 });
 
       // SEQUENCED AEROCON FADE-IN
-      // Targets both the logo and the subtitle (.aero-element) and staggers them by 0.3s
       gsap.fromTo('.aero-element', 
         { opacity: 0, y: 40 }, 
         {
           opacity: 1, 
           y: 0, 
           duration: 1,
-          stagger: 0.3, // The delay between the logo and the text appearing
+          stagger: 0.3,
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top 60%", 
@@ -74,7 +73,7 @@ const UpcomingEvents = () => {
       gsap.fromTo(skyObj, 
         { val: 0 }, 
         {
-          val: 250, // Make sure to set this back to 2500!
+          val: 250,
           duration: 2.5,
           ease: "power2.out",
           scrollTrigger: {
@@ -116,8 +115,6 @@ const UpcomingEvents = () => {
         <div className="w-screen h-full flex flex-col items-center justify-center pt-6 pb-24 md:pt-12 md:pb-40 flex-shrink-0">
           
           <div className="text-center mb-12 pointer-events-auto flex flex-col items-center justify-center w-full">
-              
-              {/* 1. Added 'aero-element' class to the logo wrapper */}
               <div className="aero-element h-24 md:h-32 lg:h-100 w-full flex items-center justify-center overflow-hidden z-10 relative opacity-0">
                 <img 
                   src="/aerocon26-logo.png" 
@@ -126,7 +123,6 @@ const UpcomingEvents = () => {
                 />
               </div>
 
-            {/* 2. Changed from <p> to <div> so App.jsx ignores it, and added 'aero-element' */}
             <div className="aero-element relative z-0 text-accent font-sans tracking-[0.3em] uppercase text-xs md:text-sm mt-2 md:mt-4 opacity-0">
               Flagship Event • Coming Soon
             </div>
@@ -138,10 +134,25 @@ const UpcomingEvents = () => {
         <div className="sky-panel w-screen h-full flex flex-col items-center justify-center pt-24 pb-24 md:pt-32 md:pb-40 px-8 md:px-24 flex-shrink-0">
           
           <div className="sky-header text-center mb-12 pointer-events-auto opacity-0">
-            <h2 className="text-5xl md:text-[100px] font-black text-white uppercase tracking-wider leading-none" style={{ fontFamily: "'Orbitron', sans-serif" }}>
-              SKY <span className="text-accent">BREACH</span>
+            <h2 className="text-5xl md:text-[100px] text-white tracking-wider leading-none">
+              <span 
+                className="font-light" 
+                style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 400, fontSize: 115 }}
+              >
+                SKY
+              </span>{" "}
+              <span 
+                className="text-accent" 
+                style={{ fontFamily: "'Adelia', cursive", fontWeight: 400 }}
+              >
+                Breach
+              </span>
             </h2>
-            <p className="text-accent font-sans tracking-[0.3em] uppercase text-sm mt-4">ROCKETRY COMPETITION • Winter</p>
+
+            {/* Shifted to the right under BREACH using translate-x */}
+            <p className="text-accent font-sans tracking-[0.3em] uppercase text-xs md:text-sm mt-1 translate-x-12 md:translate-x-48">
+              ROCKETRY COMPETITION • Winter
+            </p>
           </div>
 
           <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center pointer-events-auto">
@@ -154,7 +165,6 @@ const UpcomingEvents = () => {
             </div>
 
             <div className="flex flex-col justify-center">
-              {/* Changed <p> to <div> so the global engine ignores it during the horizontal slide */}
               <div className="text-gray-400 font-sans text-lg leading-relaxed mb-6">
                 Skybreach is an exciting model rocketry competition designed for enthusiasts and engineers to showcase their technical expertise. Participants will have the opportunity to demonstrate their mastery of aerospace principles, including advanced propulsion systems, flight dynamics, and the complexities of atmospheric re-entry and component recovery . This event invites teams to push the limits of their innovation and engineering capabilities in a challenging, hands-on environment.
               </div>
@@ -162,12 +172,22 @@ const UpcomingEvents = () => {
               <div className="flex flex-row gap-6 flex-wrap mt-2">
                 <div className="sky-stats bg-white/5 border-l-4 border-accent p-4 md:p-6 flex flex-col min-w-[160px]">
                   <span className="text-gray-500 font-sans tracking-[0.2em] uppercase text-[10px] md:text-xs mb-2">Footfall</span>
-                  <span className="sky-counter text-4xl md:text-5xl font-display font-black text-accent" style={{ fontFamily: "'Orbitron', sans-serif" }}>0+</span>
+                  <span 
+                    className="sky-counter text-4xl md:text-5xl font-light text-accent" 
+                    style={{ fontFamily: "'Square Dot Matrix'", fontWeight: 500 }}
+                  >
+                    0+
+                  </span>
                 </div>
                 
                 <div className="sky-stats bg-white/5 border-l-4 border-accent p-4 md:p-6 flex flex-col min-w-[160px]">
                   <span className="text-gray-500 font-sans tracking-[0.2em] uppercase text-[10px] md:text-xs mb-2">Teams</span>
-                  <span className="teams-counter text-4xl md:text-5xl font-display font-black text-accent" style={{ fontFamily: "'Orbitron', sans-serif" }}>0+</span>
+                  <span 
+                    className="teams-counter text-4xl md:text-5xl font-light text-accent" 
+                    style={{ fontFamily: "'Square Dot Matrix'", fontWeight: 500 }}
+                  >
+                    0+
+                  </span>
                 </div>
               </div>
 

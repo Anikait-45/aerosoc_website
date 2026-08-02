@@ -15,6 +15,13 @@ import Gallery from './components/Gallery';
 import Socials from './components/Socials';
 import Footer from './components/Footer';
 
+import RosterPage from './components/RosterPage';
+import ArchivePage from './components/ArchivePage';
+import SplashTransition from './components/SplashTransition';
+
+import ProjectsPage from './components/ProjectsPage';
+import WorkshopsPage from './components/WorkshopsPage';
+
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
@@ -24,9 +31,76 @@ function App() {
   const headingWrapRef = useRef(null);
   const aboutWrapRef = useRef(null);
 
+  const lenisRef = useRef(null);
+
+  // Remembers if you left from '#team', '#gallery', or '#heading'
+  const lastSectionRef = useRef('#heading');
+
   const [mountWebsite, setMountWebsite] = useState(false);
   const [startAnimations, setStartAnimations] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const [currentView, setCurrentView] = useState('home'); 
+  const [transitionTarget, setTransitionTarget] = useState(null);
+
+  const handleNavigate = (targetPage) => {
+    if (targetPage === currentView) return;
+
+    // Record the exact component section we are leaving from
+    if (targetPage === 'roster') {
+      lastSectionRef.current = '#team';
+    } else if (targetPage === 'archive') {
+      lastSectionRef.current = '#gallery';
+    } else if (targetPage === 'projects' || targetPage === 'workshops') {
+      lastSectionRef.current = '#heading';
+    }
+
+    setTransitionTarget(targetPage);
+  };
+
+  // =========================================================================
+  // TWO-STEP RESTORATION BEHIND THE CYAN CURTAIN (WITH 3D CANVAS WAKE-UP)
+  // =========================================================================
+  useEffect(() => {
+    if (currentView === 'home') {
+      // Step 1 (50ms): Rebuild GSAP spacers & wake up the 3D WebGL Canvas
+      const refreshTimer = setTimeout(() => {
+        ScrollTrigger.refresh(true);
+        window.dispatchEvent(new Event('resize')); // Wakes up Three.js canvas after display:block
+        if (lenisRef.current) lenisRef.current.resize();
+      }, 50);
+
+      // Step 2 (200ms): Restore scroll position & force 3D satellite morph state
+      const scrollTimer = setTimeout(() => {
+        if (lenisRef.current) lenisRef.current.resize();
+        
+        const targetEl = document.querySelector(lastSectionRef.current);
+        if (targetEl && lenisRef.current) {
+          lenisRef.current.scrollTo(targetEl, { immediate: true, force: true });
+        } else if (targetEl) {
+          targetEl.scrollIntoView();
+        }
+
+        // Guaranteed fix: If returning to Heading, force satellite state (1.0) immediately
+        if (lastSectionRef.current === '#heading' && morphEngineRef.current) {
+          morphEngineRef.current.setMorphState(1.0);
+        }
+
+        // Force a scroll tick so GSAP & Three.js render frame zero without waiting for user input
+        ScrollTrigger.update();
+      }, 200);
+
+      return () => {
+        clearTimeout(refreshTimer);
+        clearTimeout(scrollTimer);
+      };
+    } else {
+      window.scrollTo(0, 0);
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(0, { immediate: true });
+      }
+    }
+  }, [currentView]);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -35,6 +109,8 @@ function App() {
       smoothWheel: true,
       touchMultiplier: 2,
     });
+
+    lenisRef.current = lenis;
 
     if (!isLoaded) lenis.stop();
     else lenis.start();
@@ -55,7 +131,6 @@ function App() {
 
     let ctx = gsap.context(() => {
 
-      // 1. Initial UI Fade In (Now slides in from the Left to Right)
       const headingText = gsap.utils.toArray('#heading h1, #heading p');
       if (headingText.length > 0) {
         gsap.fromTo(headingText,
@@ -64,10 +139,8 @@ function App() {
         );
       }
 
-      // --- MORPH LOGIC ---
       const proxy = { morphState: 0.0 };
 
-      // PHASE 1: On load, assemble scattered particles into the first shape (right).
       gsap.to(proxy, {
         morphState: 1.0, 
         duration: 2.5,
@@ -78,8 +151,6 @@ function App() {
       });
 
       if (aboutWrapRef.current) {
-        // PHASE 2: Shape 1 (Right) morphs into Shape 2 (Left).
-        // Starts when About Us enters the screen, finishes EXACTLY at the center.
         ScrollTrigger.create({
           trigger: aboutWrapRef.current,
           start: "top bottom",
@@ -91,8 +162,6 @@ function App() {
           }
         });
 
-        // PHASE 3: Shape 2 completely disperses.
-        // Starts exactly as you scroll past the center of About Us.
         ScrollTrigger.create({
           trigger: aboutWrapRef.current,
           start: "center center",
@@ -105,7 +174,6 @@ function App() {
         });
       }
 
-      // Existing UI scroll fades for text
       const sections = gsap.utils.toArray('.premium-section');
       sections.forEach((section) => {
         gsap.to(section, {
@@ -152,35 +220,63 @@ function App() {
         />
       )}
 
+      {transitionTarget && (
+        <SplashTransition
+          targetView={transitionTarget}
+          onMidpoint={(newView) => setCurrentView(newView)}
+          onComplete={() => setTransitionTarget(null)}
+        />
+      )}
+
       {mountWebsite && (
         <>
-          <SpaceMorphBackground ref={morphEngineRef} active={startAnimations} />
+          {currentView === 'roster' && (
+            <RosterPage onNavigate={handleNavigate} />
+          )}
 
-          <div className="relative z-[200]">
-            <Navigation />
-          </div>
+          {currentView === 'archive' && (
+            <ArchivePage onNavigate={handleNavigate} />
+          )}
 
-          <main
-            ref={mainRef}
-            style={{ opacity: startAnimations ? 1 : 0 }}
-            className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
-          >
-            {/* Removed the hard pt-40 / py-32 padding and added flex/items-center to perfectly vertical center the sections */}
-            <div ref={headingWrapRef} className="relative z-[10] premium-section w-full min-h-screen flex items-center"><Heading /></div>
+          {currentView === 'projects' && (
+            <ProjectsPage onNavigate={handleNavigate} />
+          )}
 
-            <div ref={aboutWrapRef} className="relative z-[20] premium-section w-full min-h-screen flex items-center"><AboutUs /></div>
+          {currentView === 'workshops' && (
+            <WorkshopsPage onNavigate={handleNavigate} />
+          )}
 
-            <div className="relative z-[30] w-full"><UpcomingEvents /></div>
-            <div className="relative z-[35] w-full"><FootfallGraph /></div>
-            <div className="relative z-[50] w-full"><Team /></div>
-            <div className="relative z-[30] w-full"><Gallery /></div>
+          <div style={{ display: currentView === 'home' ? 'block' : 'none' }}>
+            <SpaceMorphBackground ref={morphEngineRef} active={startAnimations && currentView === 'home'} />
 
-            <div className="relative z-[70] w-full">
-              <Socials />
-              <Footer />
+            <div className="relative z-[200]">
+              <Navigation />
             </div>
 
-          </main>
+            <main
+              ref={mainRef}
+              style={{ opacity: startAnimations ? 1 : 0 }}
+              className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
+            >
+              {/* Passed onNavigate={handleNavigate} to Heading */}
+              <div ref={headingWrapRef} className="relative z-[10] premium-section w-full min-h-screen flex items-center">
+                <Heading onNavigate={handleNavigate} />
+              </div>
+
+              <div ref={aboutWrapRef} className="relative z-[20] premium-section w-full min-h-screen flex items-center"><AboutUs /></div>
+
+              <div className="relative z-[30] w-full"><UpcomingEvents /></div>
+              <div className="relative z-[35] w-full"><FootfallGraph /></div>
+              <div className="relative z-[50] w-full"><Team onNavigate={handleNavigate} /></div>
+              <div className="relative z-[30] w-full"><Gallery onNavigate={handleNavigate} /></div>
+
+              <div className="relative z-[70] w-full">
+                <Socials />
+                <Footer />
+              </div>
+
+            </main>
+          </div>
         </>
       )}
 

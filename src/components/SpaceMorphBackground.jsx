@@ -29,28 +29,132 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
     renderer.setClearColor(0x000000, 1);
     mountRef.current.appendChild(renderer.domElement);
 
-    // --- THE FIX: MASSIVE DENSITY ---
-    const totalCount = 70000; // 100k total particles
-    const shapeCount = 15000;  // 15k for the shape, leaving 85,000 for the dense background!
+    const totalCount = 50000; 
+    const shapeCount = 20000;  
 
     const geometry = new THREE.BufferGeometry();
     
     const posAmbient = new Float32Array(totalCount * 3);
-    const posCube = new Float32Array(totalCount * 3);
-    const posTetra = new Float32Array(totalCount * 3);
+    const posSat = new Float32Array(totalCount * 3);
+    const posEarth = new Float32Array(totalCount * 3); 
     const isBg = new Float32Array(totalCount);
+    
+    const highlightSat = new Float32Array(totalCount);
+    const highlightEarth = new Float32Array(totalCount);
 
-    const tetVerts = [
-      new THREE.Vector3(1, 1, 1), new THREE.Vector3(1, -1, -1),
-      new THREE.Vector3(-1, 1, -1), new THREE.Vector3(-1, -1, 1)
-    ];
-    const tetFaces = [ [0,1,2], [0,1,3], [0,2,3], [1,2,3] ];
+    // JS Smoothstep for calculating spatial gradients in 3D Space
+    const smoothstepJS = (min, max, value) => {
+      const t = Math.max(0, Math.min(1, (value - min) / (max - min)));
+      return t * t * (3 - 2 * t);
+    };
+
+    // --- ACCURATE PROCEDURAL SHAPE GENERATORS ---
+
+    const getSatellitePoint = () => {
+      const p = Math.random();
+      let vec;
+      
+      if (p < 0.15) { 
+        // Main Body (Octagonal Bus)
+        const angle = Math.floor(Math.random() * 8) * (Math.PI / 4);
+        const r = 1.6 * Math.random(); 
+        const y = (Math.random() - 0.5) * 5.5;
+        vec = new THREE.Vector3(r * Math.cos(angle), y, r * Math.sin(angle));
+      } else if (p < 0.6) { 
+        // Lattice/Grid Solar Arrays (Wings)
+        let valid = false;
+        while(!valid) {
+          const sign = Math.random() > 0.5 ? 1 : -1;
+          const x = sign * (2.2 + Math.random() * 9.0); 
+          const y = (Math.random() - 0.5) * 4.0; 
+          const z = (Math.random() - 0.5) * 0.15;
+          
+          const localX = Math.abs(x) - 2.2; 
+          const localY = y + 2.0; 
+          
+          const col = localX / 2.25; 
+          const row = localY / 2.0; 
+          
+          const fractX = col - Math.floor(col);
+          const fractY = row - Math.floor(row);
+          
+          const frameThick = 0.15; 
+          const isFrame = fractX < frameThick || fractX > 1.0 - frameThick || fractY < frameThick || fractY > 1.0 - frameThick;
+          
+          if (isFrame || Math.random() < 0.05) {
+            vec = new THREE.Vector3(x, y, z);
+            valid = true;
+          }
+        }
+      } else if (p < 0.8) { 
+        // Deep Parabolic Dish Antenna
+        const angle = Math.random() * Math.PI * 2;
+        const rRadius = Math.random();
+        const r = Math.sqrt(rRadius) * 3.2;
+        const y = 2.8 + (r * r * 0.35); 
+        const thickness = (Math.random() - 0.5) * 0.2;
+        vec = new THREE.Vector3(r * Math.cos(angle), y + thickness, r * Math.sin(angle));
+      } else if (p < 0.9) { 
+        // Antenna Focal Receiver
+        const r = Math.random() * 0.5;
+        const angle = Math.random() * Math.PI * 2;
+        vec = new THREE.Vector3(r * Math.cos(angle), 6.5 + (Math.random() - 0.5) * 0.5, r * Math.sin(angle));
+      } else { 
+        // Thrusters & Instruments (Bottom)
+        const angle = Math.random() * Math.PI * 2;
+        const r = Math.random() * 1.2;
+        vec = new THREE.Vector3(r * Math.cos(angle), -2.8 - Math.random() * 2.0, r * Math.sin(angle));
+      }
+
+      // Spatial Gradient Highlighting
+      const gradient = smoothstepJS(-5.0, 7.0, vec.x + vec.y * 2.0);
+      return { pos: vec, highlight: gradient };
+    };
+
+    const getEarthPoint = () => {
+      let vec = new THREE.Vector3();
+      let valid = false;
+      let highlight = 0.0;
+      
+      while(!valid) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        
+        const nx = Math.sin(phi) * Math.cos(theta);
+        const ny = Math.cos(phi);
+        const nz = Math.sin(phi) * Math.sin(theta);
+        
+        let n = 0;
+        n += Math.sin(nx * 3.0) * Math.cos(ny * 3.0) * Math.sin(nz * 3.0);
+        n += 0.5 * Math.sin(nx * 6.0 + 1.5) * Math.cos(ny * 6.0 + 1.5) * Math.sin(nz * 6.0 + 1.5);
+        n += 0.25 * Math.sin(nx * 12.0) * Math.cos(ny * 12.0) * Math.sin(nz * 12.0);
+        
+        const isLand = n > 0.1;
+        
+        if (isLand || Math.random() < 0.25) {
+          let r = 6.0; 
+          
+          if (isLand) {
+            r += 0.15 + Math.random() * 0.3; 
+            highlight = 1.0; 
+          } else {
+            r += (Math.random() - 0.5) * 0.05; 
+            highlight = 0.0; 
+          }
+          
+          vec.set(nx * r, ny * r, nz * r);
+          valid = true;
+        }
+      }
+      return { pos: vec, highlight };
+    };
+
+    const eulerSat = new THREE.Euler(Math.PI / 6, -Math.PI / 4, 0);
+    const eulerEarth = new THREE.Euler(0.41, 0, 0);
 
     for (let i = 0; i < totalCount; i++) {
       const i3 = i * 3;
 
-      // THE FIX: Compressing the bounding box from 120 down to 65. 
-      // This packs the 85,000 background particles tightly together.
       posAmbient[i3] = (Math.random() - 0.5) * 65;
       posAmbient[i3 + 1] = (Math.random() - 0.5) * 65;
       posAmbient[i3 + 2] = (Math.random() - 0.5) * 30 - 5; 
@@ -58,48 +162,41 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       if (i < shapeCount) {
         isBg[i] = 0.0; 
 
-        // Cube Positions (Right Side: x + 12)
-        const sizeC = 9;
-        let cx = (Math.random() - 0.5) * sizeC;
-        let cy = (Math.random() - 0.5) * sizeC;
-        let cz = (Math.random() - 0.5) * sizeC;
-        const axis = Math.floor(Math.random() * 3);
-        const sign = Math.random() > 0.5 ? 1 : -1;
-        if (axis === 0) cx = (sizeC / 2) * sign;
-        if (axis === 1) cy = (sizeC / 2) * sign;
-        if (axis === 2) cz = (sizeC / 2) * sign;
-        
-        posCube[i3] = cx + 12;
-        posCube[i3 + 1] = cy;
-        posCube[i3 + 2] = cz;
+        const satData = getSatellitePoint();
+        const vSat = satData.pos.applyEuler(eulerSat);
+        posSat[i3] = vSat.x;
+        posSat[i3 + 1] = vSat.y;
+        posSat[i3 + 2] = vSat.z;
+        highlightSat[i] = satData.highlight;
 
-        // Tetrahedron Positions (Left Side: x - 12)
-        const face = tetFaces[Math.floor(Math.random() * 4)];
-        const vA = tetVerts[face[0]], vB = tetVerts[face[1]], vC = tetVerts[face[2]];
-        let r1 = Math.random(), r2 = Math.random();
-        if (r1 + r2 > 1) { r1 = 1 - r1; r2 = 1 - r2; }
-        const r3 = 1 - r1 - r2;
-        
-        const sizeT = 10;
-        posTetra[i3] = ((vA.x * r1 + vB.x * r2 + vC.x * r3) * sizeT) - 12;
-        posTetra[i3 + 1] = (vA.y * r1 + vB.y * r2 + vC.y * r3) * sizeT;
-        posTetra[i3 + 2] = (vA.z * r1 + vB.z * r2 + vC.z * r3) * sizeT;
+        const earthData = getEarthPoint();
+        const vEarth = earthData.pos.applyEuler(eulerEarth);
+        posEarth[i3] = vEarth.x;
+        posEarth[i3 + 1] = vEarth.y;
+        posEarth[i3 + 2] = vEarth.z;
+        highlightEarth[i] = earthData.highlight;
+
       } else {
         isBg[i] = 1.0; 
-        posCube[i3] = posAmbient[i3];
-        posCube[i3 + 1] = posAmbient[i3 + 1];
-        posCube[i3 + 2] = posAmbient[i3 + 2];
+        
+        posSat[i3] = posAmbient[i3];
+        posSat[i3 + 1] = posAmbient[i3 + 1];
+        posSat[i3 + 2] = posAmbient[i3 + 2];
+        highlightSat[i] = 0.0;
 
-        posTetra[i3] = posAmbient[i3];
-        posTetra[i3 + 1] = posAmbient[i3 + 1];
-        posTetra[i3 + 2] = posAmbient[i3 + 2];
+        posEarth[i3] = posAmbient[i3];
+        posEarth[i3 + 1] = posAmbient[i3 + 1];
+        posEarth[i3 + 2] = posAmbient[i3 + 2];
+        highlightEarth[i] = 0.0;
       }
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(posAmbient, 3));
-    geometry.setAttribute('aCube', new THREE.BufferAttribute(posCube, 3));
-    geometry.setAttribute('aTetra', new THREE.BufferAttribute(posTetra, 3));
+    geometry.setAttribute('aSat', new THREE.BufferAttribute(posSat, 3));
+    geometry.setAttribute('aEarth', new THREE.BufferAttribute(posEarth, 3));
     geometry.setAttribute('aIsBg', new THREE.BufferAttribute(isBg, 1));
+    geometry.setAttribute('aHighlightSat', new THREE.BufferAttribute(highlightSat, 1));
+    geometry.setAttribute('aHighlightEarth', new THREE.BufferAttribute(highlightEarth, 1));
 
     const mouse3D = new THREE.Vector3(-9999, -9999, -9999);
     
@@ -107,14 +204,16 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       uniform float uTime;
       uniform vec3 uPointer;
       uniform float uState;
+      uniform vec2 uMouseRot; 
       
-      attribute vec3 aCube;
-      attribute vec3 aTetra;
+      attribute vec3 aSat;
+      attribute vec3 aEarth;
       attribute float aIsBg;
+      attribute float aHighlightSat;
+      attribute float aHighlightEarth;
       
       varying vec3 vColor;
       
-      // --- Curl Noise Math ---
       vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
       vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
       vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -186,23 +285,50 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
         float z = p_x1.y - p_x0.y - p_y1.x + p_y0.x;
         return normalize(vec3(x, y, z) * (1.0 / (2.0 * e)));
       }
+
+      mat3 getRotationMatrix(vec2 rot) {
+        float cx = cos(rot.x), sx = sin(rot.x);
+        float cy = cos(rot.y), sy = sin(rot.y);
+        mat3 rx = mat3(1.0, 0.0, 0.0, 0.0, cx, -sx, 0.0, sx, cx);
+        mat3 ry = mat3(cy, 0.0, sy, 0.0, 1.0, 0.0, -sy, 0.0, cy);
+        return ry * rx;
+      }
+      
+      mat3 getSpinMatrix(float angle) {
+        float s = sin(angle);
+        float c = cos(angle);
+        return mat3(c, 0.0, s, 0.0, 1.0, 0.0, -s, 0.0, c);
+      }
       
       void main() {
+        mat3 rotMat = getRotationMatrix(uMouseRot);
+        
+        vec3 satBounce = vec3(12.0, sin(uTime * 1.5) * 0.7, 0.0);
+        vec3 earthBounce = vec3(-12.0, sin(uTime * 1.2 + 1.0) * 0.8, 0.0);
+
+        vec3 rotatedSat = (rotMat * aSat) + satBounce;
+        vec3 rotatedEarth = (rotMat * getSpinMatrix(uTime * 0.3) * aEarth) + earthBounce;
+
         vec3 shapePos;
         float state = clamp(uState, 0.0, 3.0);
+        float currentHighlight = 0.0;
         
         if (state < 1.0) {
-            shapePos = mix(position, aCube, state);
+            shapePos = mix(position, rotatedSat, state);
+            currentHighlight = mix(0.0, aHighlightSat, state);
         } else if (state < 2.0) {
-            shapePos = mix(aCube, aTetra, state - 1.0);
+            shapePos = mix(rotatedSat, rotatedEarth, state - 1.0);
+            currentHighlight = mix(aHighlightSat, aHighlightEarth, state - 1.0);
         } else {
-            shapePos = mix(aTetra, position, state - 2.0);
+            shapePos = mix(rotatedEarth, position, state - 2.0);
+            currentHighlight = mix(aHighlightEarth, 0.0, state - 2.0);
         }
         
         vec3 basePos = mix(shapePos, position, aIsBg);
         
-        vec3 noise = curlNoise(vec3(basePos.x * 0.2, basePos.y * 0.2, uTime * 0.1)) * 1.5;
-        vec3 finalPos = basePos + noise;
+        vec3 noise = curlNoise(vec3(basePos.x * 0.2, basePos.y * 0.2, uTime * 0.1));
+        float noiseIntensity = mix(0.02, 1.5, aIsBg);
+        vec3 finalPos = basePos + (noise * noiseIntensity);
         
         float dist = distance(finalPos, uPointer);
         if(dist < 4.0) {
@@ -214,12 +340,17 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
         vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
         gl_Position = projectionMatrix * mvPosition;
         
-        float baseSize = mix(80.0, 45.0, aIsBg);
+        float baseSize = mix(55.0, 45.0, aIsBg);
         gl_PointSize = (baseSize / -mvPosition.z);
         
+        float bgStar = step(0.985, fract(sin(dot(position.xy, vec2(12.9898,78.233))) * 43758.5453));
+        float finalHighlight = mix(currentHighlight, bgStar, aIsBg);
+
         vec3 coreColor = vec3(0.0, 0.82, 1.0); 
         vec3 nebulaColor = vec3(0.0, 0.05, 0.35); 
-        vColor = mix(coreColor, nebulaColor, smoothstep(0.0, 15.0, length(finalPos)));
+        vec3 baseColor = mix(coreColor, nebulaColor, smoothstep(0.0, 15.0, length(finalPos)));
+        
+        vColor = mix(baseColor, vec3(1.0, 1.0, 1.0), finalHighlight);
       }
     `;
 
@@ -240,7 +371,8 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       uniforms: {
         uTime: { value: 0 }, 
         uPointer: { value: mouse3D }, 
-        uState: { value: 0.0 } 
+        uState: { value: 0.0 },
+        uMouseRot: { value: new THREE.Vector2(0, 0) } 
       },
       vertexShader,
       fragmentShader
@@ -253,15 +385,24 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
     const mouse = new THREE.Vector2(-9999, -9999);
     const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
     
+    const targetRotation = new THREE.Vector2(0, 0);
+    const currentRotation = new THREE.Vector2(0, 0);
+
     const onMouseMove = (e) => {
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
       raycaster.ray.intersectPlane(plane, mouse3D);
+
+      targetRotation.y = mouse.x * Math.PI; 
+      targetRotation.x = mouse.y * Math.PI * 0.5; 
     };
     
     window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseleave', () => mouse3D.set(-9999, -9999, -9999));
+    window.addEventListener('mouseleave', () => {
+      mouse3D.set(-9999, -9999, -9999);
+      targetRotation.set(0, 0); 
+    });
     
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight; 
@@ -278,6 +419,8 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       if (active) material.uniforms.uTime.value += delta;
 
       material.uniforms.uPointer.value.lerp(mouse3D, 0.1);
+      currentRotation.lerp(targetRotation, 0.05);
+      material.uniforms.uMouseRot.value.copy(currentRotation);
 
       renderer.render(scene, camera); 
       animationFrameId = requestAnimationFrame(animate);

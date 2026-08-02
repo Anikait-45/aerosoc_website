@@ -25,22 +25,22 @@ const ParticleMorph = forwardRef((props, ref) => {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 1); // Solid black background
+    renderer.setClearColor(0x000000, 1); 
     container.appendChild(renderer.domElement);
 
     // --- PARTICLE GENERATION ---
     const count = 30000;
     const geometry = new THREE.BufferGeometry();
 
-    const pos1 = new Float32Array(count * 3); // Shape 1: Sphere (Right)
-    const pos2 = new Float32Array(count * 3); // Shape 2: Cube (Left)
-    const pos3 = new Float32Array(count * 3); // Shape 3: Torus (Right)
-    const randoms = new Float32Array(count * 3); // For dispersion chaos
+    const pos1 = new Float32Array(count * 3); 
+    const pos2 = new Float32Array(count * 3); 
+    const pos3 = new Float32Array(count * 3); 
+    const randoms = new Float32Array(count * 3); 
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
 
-      // 1. Sphere (Right side of screen: X offset +8)
+      // 1. Sphere 
       const radius = 6;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2.0 * Math.random() - 1.0);
@@ -48,17 +48,17 @@ const ParticleMorph = forwardRef((props, ref) => {
       pos1[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       pos1[i3 + 2] = radius * Math.cos(phi);
 
-      // 2. Cube (Left side of screen: X offset -8)
+      // 2. Cube 
       const size = 10;
       pos2[i3] = (Math.random() - 0.5) * size - 8;
       pos2[i3 + 1] = (Math.random() - 0.5) * size;
       pos2[i3 + 2] = (Math.random() - 0.5) * size;
 
-      // 3. Torus-ish Disc (Right side again: X offset +8)
+      // 3. Torus-ish Disc 
       const r = 5 + Math.random() * 3;
       const t = Math.random() * Math.PI * 2;
       pos3[i3] = (r * Math.cos(t)) + 8;
-      pos3[i3 + 1] = (Math.random() - 0.5) * 2; // Flat Y
+      pos3[i3 + 1] = (Math.random() - 0.5) * 2; 
       pos3[i3 + 2] = r * Math.sin(t);
 
       // Random dispersion vectors for the shattering effect
@@ -79,7 +79,7 @@ const ParticleMorph = forwardRef((props, ref) => {
       transparent: true,
       uniforms: {
         uTime: { value: 0 },
-        uProgress: { value: 0 }, // Driven by GSAP scroll (0 to 2)
+        uProgress: { value: 0 }, 
         uColor: { value: new THREE.Color("#00d2ff") }
       },
       vertexShader: `
@@ -95,9 +95,6 @@ const ParticleMorph = forwardRef((props, ref) => {
         void main() {
           vec3 currentPos;
           
-          // Determine which two shapes we are interpolating between based on progress
-          // Progress 0 to 1: Sphere to Cube
-          // Progress 1 to 2: Cube to Torus
           float localProgress;
           
           if (uProgress < 1.0) {
@@ -112,21 +109,19 @@ const ParticleMorph = forwardRef((props, ref) => {
           float dispersion = smoothstep(0.0, 0.5, localProgress) * (1.0 - smoothstep(0.5, 1.0, localProgress));
           currentPos += aRandom * dispersion;
           
-          // Add a subtle idle float animation
-          currentPos.y += sin(uTime + currentPos.x * 0.5) * 0.5;
+          // THE FIX: Uniform idle float without the 'x' shear distortion
+          currentPos.y += sin(uTime * 1.5) * 0.5;
 
           vec4 viewPos = viewMatrix * modelMatrix * vec4(currentPos, 1.0);
           gl_Position = projectionMatrix * viewPos;
           
-          // Particles get smaller as they get further away
           gl_PointSize = 15.0 / -viewPos.z;
-          vColor = vec3(0.0, 0.8, 1.0); // Cyan
+          vColor = vec3(0.0, 0.8, 1.0); 
         }
       `,
       fragmentShader: `
         varying vec3 vColor;
         void main() {
-          // Circular particle mask
           float dist = distance(gl_PointCoord, vec2(0.5));
           if(dist > 0.5) discard;
           
@@ -147,7 +142,6 @@ const ParticleMorph = forwardRef((props, ref) => {
       const delta = clock.getDelta();
       material.uniforms.uTime.value += delta;
 
-      // Slowly rotate the entire point cloud
       points.rotation.y = Math.sin(material.uniforms.uTime.value * 0.2) * 0.5;
 
       renderer.render(scene, camera);
@@ -155,7 +149,6 @@ const ParticleMorph = forwardRef((props, ref) => {
     };
     animate();
 
-    // --- RESIZE HANDLER ---
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();

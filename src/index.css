@@ -41,3 +41,24 @@ body {
   -webkit-text-stroke: 2px rgba(247, 243, 243, 0.1);
   color: transparent;
 }
+@font-face {
+  font-family: 'Square Dot Matrix';
+  src: url('/Square-Dot-Matrix.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Platinum';
+  src: url('/Platinum Sign.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Led Dot Matrix';
+  src: url('/LED Dot-Matrix.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

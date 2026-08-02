@@ -9,10 +9,9 @@ const galleryData = [
   { id: 2, location: "SKYBREACH, 2025", img: "/gimg2.jpeg", size: "w-64 md:w-80", yOffset: "translate-y-20 md:translate-y-28" },
   { id: 3, location: "PROJECT EVALUATION, 2025", img: "/gimg3.jpeg", size: "w-52 md:w-72", yOffset: "-translate-y-6 md:-translate-y-8" },
   { id: 4, location: "ALTITUDE ADVENTURE, 2025", img: "/gimg4.jpeg", size: "w-64 md:w-80", yOffset: "translate-y-12 md:translate-y-16" },
-  
 ];
 
-const Gallery = () => {
+const Gallery = ({ onNavigate }) => {
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
 
@@ -40,7 +39,6 @@ const Gallery = () => {
   return (
     <section id="gallery" ref={sectionRef} className="h-screen overflow-hidden bg-transparent relative border-t border-white/5 flex items-center pointer-events-none">
       
-      {/* Added pb-24 md:pb-40 to shift the entire track upwards */}
       <div ref={trackRef} className="flex h-full items-center pb-20 md:pb-30 px-16 md:px-48 gap-24 md:gap-56 w-max transform-gpu">
         
         {galleryData.map((item) => (
@@ -59,12 +57,18 @@ const Gallery = () => {
           <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Neil Armstrong</p>
         </div>
 
-        {/* MODIFIED ONLY THIS DIV: Added flex, alignment, and the minimalist button */}
-        <div className="flex-shrink-0 w-[45vw] flex items-center justify-end  pointer-events-auto">
-          <a href="#" className="px-6 py-2 border border-white/20 text-white/60 hover:text-white hover:border-white text-[10px] uppercase tracking-widest font-sans rounded-full transition-all duration-300">
+        <div className="flex-shrink-0 w-[45vw] flex items-center justify-end pointer-events-auto relative z-50">
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigate) onNavigate('archive');
+            }}
+            className="px-6 py-2 border border-white/20 text-white/60 hover:text-white hover:border-white text-[10px] uppercase tracking-widest font-sans rounded-full transition-all duration-300 cursor-pointer pointer-events-auto"
+          >
             View Archive
-          </a>
+          </button>
         </div>
+
       </div>
     </section>
   );
