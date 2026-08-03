@@ -82,8 +82,8 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
   }, []);
 
   return (
-    // FIX 1: Swapped standard inset for explicitly fixed top/left with dynamic viewport height (100dvh)
-    <div ref={containerRef} className="fixed top-0 left-0 w-full h-[100dvh] z-[9999] pointer-events-none overflow-hidden">
+    // Reverted to fixed inset-0 for rock-solid fullscreen locking
+    <div ref={containerRef} className="fixed inset-0 z-[9999] pointer-events-none overflow-hidden">
       <div 
         ref={darkBgRef} 
         className="absolute inset-0 w-full h-full z-20 pointer-events-auto bg-[#111114]"
@@ -137,8 +137,8 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
         </svg>
       </div>
 
-      {/* FIX 2: Increased the bottom coordinate offset (bottom-16/24) to create a safe zone clear of the taskbar */}
-      <div ref={contentRef} className="absolute top-0 left-0 right-0 bottom-16 sm:bottom-20 md:bottom-24 flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 z-30 pointer-events-auto">
+      {/* THE FIX: Changed 'bottom-X' to 'inset-0' and used massive padding-bottom (pb-32/pb-36) to force the text up visually */}
+      <div ref={contentRef} className="absolute inset-0 flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 pb-28 sm:pb-32 md:pb-36 z-30 pointer-events-auto">
         <div className="flex-1 flex flex-col items-end justify-center md:justify-start md:pt-44 pr-4 sm:pr-8 md:pr-32 w-full">
           <div className="flex flex-col items-start w-full max-w-xs md:max-w-sm">
             <div className="h-[79px] sm:h-24 md:h-36 lg:h-40 mb-8 sm:mb-12 md:mb-52 overflow-hidden flex items-center justify-start">
@@ -175,7 +175,7 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-end pb-4 sm:pb-6 md:pb-8">
+        <div className="flex flex-col items-start justify-end">
           <div className="flex items-center gap-4">
             <div className="w-1.5 h-6 bg-[#00d2ff]"></div>
             <span ref={counterRef} className="text-[#00d2ff] text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter leading-none">
