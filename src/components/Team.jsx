@@ -69,7 +69,7 @@ const Team = ({ onNavigate }) => {
     <section id="team" ref={teamRef} className="min-h-screen py-32 px-8 md:px-24 bg-transparent relative border-t border-white/5 pointer-events-none">      
       <div className="team-header mb-20 text-center pointer-events-auto">
         <div className="text-4xl md:text-7xl font-display font-black text-white uppercase tracking-tighter">
-          The <span className="text-accent">Squad</span>
+          Our <span className="text-accent">Crew</span>
         </div>
       </div>
 

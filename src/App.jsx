@@ -24,6 +24,27 @@ import WorkshopsPage from './components/WorkshopsPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const VIEW_TO_PATH = {
+  home: '/',
+  roster: '/team',
+  archive: '/gallery',
+  projects: '/projects',
+  workshops: '/workshops',
+};
+
+const PATH_TO_VIEW = {
+  '/': 'home',
+  '/team': 'roster',
+  '/gallery': 'archive',
+  '/projects': 'projects',
+  '/workshops': 'workshops',
+};
+
+const getInitialView = () => {
+  const path = window.location.pathname.replace(/\/$/, '') || '/';
+  return PATH_TO_VIEW[path] || 'home';
+};
+
 function App() {
   const mainRef = useRef(null);
   const morphEngineRef = useRef(null);
@@ -33,20 +54,18 @@ function App() {
 
   const lenisRef = useRef(null);
 
-  // Remembers if you left from '#team', '#gallery', or '#heading'
   const lastSectionRef = useRef('#heading');
 
   const [mountWebsite, setMountWebsite] = useState(false);
   const [startAnimations, setStartAnimations] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [currentView, setCurrentView] = useState('home'); 
+  const [currentView, setCurrentView] = useState(getInitialView); 
   const [transitionTarget, setTransitionTarget] = useState(null);
 
-  const handleNavigate = (targetPage) => {
+  const handleNavigate = (targetPage, isPopState = false) => {
     if (targetPage === currentView) return;
 
-    // Record the exact component section we are leaving from
     if (targetPage === 'roster') {
       lastSectionRef.current = '#team';
     } else if (targetPage === 'archive') {
@@ -55,22 +74,35 @@ function App() {
       lastSectionRef.current = '#heading';
     }
 
+    if (!isPopState) {
+      const newPath = VIEW_TO_PATH[targetPage] || '/';
+      window.history.pushState({ view: targetPage }, '', newPath);
+    }
+
     setTransitionTarget(targetPage);
   };
 
-  // =========================================================================
-  // TWO-STEP RESTORATION BEHIND THE CYAN CURTAIN (WITH 3D CANVAS WAKE-UP)
-  // =========================================================================
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/\/$/, '') || '/';
+      const targetView = PATH_TO_VIEW[path] || 'home';
+      if (targetView !== currentView) {
+        handleNavigate(targetView, true);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentView]);
+
   useEffect(() => {
     if (currentView === 'home') {
-      // Step 1 (50ms): Rebuild GSAP spacers & wake up the 3D WebGL Canvas
       const refreshTimer = setTimeout(() => {
         ScrollTrigger.refresh(true);
-        window.dispatchEvent(new Event('resize')); // Wakes up Three.js canvas after display:block
+        window.dispatchEvent(new Event('resize'));
         if (lenisRef.current) lenisRef.current.resize();
       }, 50);
 
-      // Step 2 (200ms): Restore scroll position & force 3D satellite morph state
       const scrollTimer = setTimeout(() => {
         if (lenisRef.current) lenisRef.current.resize();
         
@@ -81,12 +113,10 @@ function App() {
           targetEl.scrollIntoView();
         }
 
-        // Guaranteed fix: If returning to Heading, force satellite state (1.0) immediately
         if (lastSectionRef.current === '#heading' && morphEngineRef.current) {
           morphEngineRef.current.setMorphState(1.0);
         }
 
-        // Force a scroll tick so GSAP & Three.js render frame zero without waiting for user input
         ScrollTrigger.update();
       }, 200);
 
@@ -131,11 +161,28 @@ function App() {
 
     let ctx = gsap.context(() => {
 
-      const headingText = gsap.utils.toArray('#heading h1, #heading p');
-      if (headingText.length > 0) {
-        gsap.fromTo(headingText,
+      const mainText = document.querySelector('#heading h1');
+      const subText = document.querySelector('#heading p');
+      const allHeadingButtons = gsap.utils.toArray('.heading-anim-btn');
+
+      if (mainText) {
+        gsap.fromTo(mainText,
           { x: -80, opacity: 0 },
-          { x: 0, opacity: 1, duration: 1.8, delay: 0.5, ease: "expo.out", stagger: 0.2 }
+          { x: 0, opacity: 1, duration: 1.5, delay: 2.0, ease: "expo.out" }
+        );
+      }
+
+      if (subText) {
+        gsap.fromTo(subText,
+          { x: -80, opacity: 0 },
+          { x: 0, opacity: 1, duration: 1.5, delay: 2.5, ease: "expo.out" }
+        );
+      }
+
+      if (allHeadingButtons.length > 0) {
+        gsap.fromTo(allHeadingButtons,
+          { x: -80, opacity: 0 },
+          { x: 0, opacity: 1, duration: 1.5, delay: 3.0, ease: "expo.out" }
         );
       }
 
@@ -250,7 +297,7 @@ function App() {
             <SpaceMorphBackground ref={morphEngineRef} active={startAnimations && currentView === 'home'} />
 
             <div className="relative z-[200]">
-              <Navigation />
+              <Navigation onNavigate={handleNavigate} />
             </div>
 
             <main
@@ -258,7 +305,6 @@ function App() {
               style={{ opacity: startAnimations ? 1 : 0 }}
               className="transition-opacity duration-500 relative z-10 bg-transparent pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_h3]:pointer-events-auto [&_p]:pointer-events-auto [&_img]:pointer-events-auto [&_div.group]:pointer-events-auto"
             >
-              {/* Passed onNavigate={handleNavigate} to Heading */}
               <div ref={headingWrapRef} className="relative z-[10] premium-section w-full min-h-screen flex items-center">
                 <Heading onNavigate={handleNavigate} />
               </div>

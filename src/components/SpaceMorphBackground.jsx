@@ -29,7 +29,7 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
     renderer.setClearColor(0x000000, 1);
     mountRef.current.appendChild(renderer.domElement);
 
-    const totalCount = 50000; 
+    const totalCount = 30000; 
     const shapeCount = 20000;  
 
     const geometry = new THREE.BufferGeometry();

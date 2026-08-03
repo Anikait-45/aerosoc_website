@@ -5,46 +5,47 @@ const navLinks = [
   { name: 'Home', id: 'heading', icon: Target },
   { name: 'About Us', id: 'about', icon: Terminal },
   { name: 'Events', id: 'events', icon: Calendar },
-  // { name: 'Workshops', id: 'workshops', icon: Cpu },
-  // { name: 'Projects', id: 'projects', icon: Rocket },
-  { name: 'Team', id: 'team', icon: Users },
-  { name: 'Gallery', id: 'gallery', icon: Aperture },
+  { name: 'Workshops', id: 'workshops', icon: Cpu, isPage: true, targetView: 'workshops' },
+  { name: 'Projects', id: 'projects', icon: Rocket, isPage: true, targetView: 'projects' },
+  { name: 'Team', id: 'team', icon: Users, isPage: true, targetView: 'roster' },
+  { name: 'Gallery', id: 'gallery', icon: Aperture, isPage: true, targetView: 'archive' },
   { name: 'Socials', id: 'socials', icon: Share2 }
 ];
 
-const Navigation = ({ onGoHome }) => {
+const Navigation = ({ onGoHome, onNavigate }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const scrollToSection = (id) => {
+  const handleNavClick = (link) => {
     setIsHovered(false);
 
-    // 1. HOME CLICK: Force absolute top (0, 0) for crisp satellite state
-    if (id === 'heading') {
+    if (link.isPage) {
+      if (onNavigate) {
+        onNavigate(link.targetView);
+      }
+      return;
+    }
+
+    if (link.id === 'heading') {
       if (onGoHome) onGoHome();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    const element = document.getElementById(id);
+    const element = document.getElementById(link.id);
     if (!element) return;
 
-    // 2. ABOUT US CLICK: Three-Stage Touchdown Timers
-    // Catches both quick arrivals (Team/Events) and long-distance arrivals (Gallery/Socials)
-    if (id === 'about') {
+    if (link.id === 'about') {
       const getExactCenter = () => {
         const elementTop = element.getBoundingClientRect().top + window.scrollY;
         return elementTop + (element.offsetHeight - window.innerHeight) / 2;
       };
 
-      // Stage 1: Immediate launch
       window.scrollTo({ top: getExactCenter(), behavior: 'smooth' });
 
-      // Stage 2: Catches medium-distance arrivals (Events / Team) at 750ms
       setTimeout(() => {
         window.scrollTo({ top: getExactCenter(), behavior: 'smooth' });
       }, 750);
 
-      // Stage 3: Catches long-distance arrivals (Gallery / Socials) after full travel at 1500ms
       setTimeout(() => {
         window.scrollTo({ top: getExactCenter(), behavior: 'smooth' });
       }, 1500);
@@ -52,19 +53,18 @@ const Navigation = ({ onGoHome }) => {
       return;
     }
 
-    // 3. ALL OTHER SECTIONS
     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
     <div 
-      className="fixed top-0 right-0 h-screen z-[200] flex flex-col py-8 bg-black/20 backdrop-blur-xl border-l border-white/5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      className="fixed top-0 right-0 h-screen z-[200] flex flex-col py-8 bg-transparent backdrop-blur-sm border-l border-white/5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ width: isHovered ? '11rem' : '4rem' }}
     >
       <div className="w-full flex justify-end px-3 mb-30">
-        <div className="flex items-center gap-4 cursor-pointer" onClick={() => scrollToSection('heading')}>
+        <div className="flex items-center gap-4 cursor-pointer" onClick={() => handleNavClick({ id: 'heading' })}>
           <span className={`text-white font-display font-bold tracking-[0.2em] text-xs uppercase overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-right whitespace-nowrap ${isHovered ? 'w-24 opacity-100' : 'w-0 opacity-0'}`}>
             AEROSOC
           </span>
@@ -78,7 +78,7 @@ const Navigation = ({ onGoHome }) => {
         {navLinks.map((link) => {
           const Icon = link.icon;
           return (
-            <button key={link.id} onClick={() => scrollToSection(link.id)} className="flex flex-row-reverse items-center justify-start gap-4 group w-full text-gray-400 hover:text-accent transition-colors duration-300">
+            <button key={link.id} onClick={() => handleNavClick(link)} className="flex flex-row-reverse items-center justify-start gap-4 group w-full text-gray-400 hover:text-accent transition-colors duration-300">
               <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                 <Icon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
               </div>

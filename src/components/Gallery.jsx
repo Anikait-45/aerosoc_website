@@ -57,17 +57,6 @@ const Gallery = ({ onNavigate }) => {
           <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Neil Armstrong</p>
         </div>
 
-        <div className="flex-shrink-0 w-[45vw] flex items-center justify-end pointer-events-auto relative z-50">
-          <button
-            type="button"
-            onClick={() => {
-              if (onNavigate) onNavigate('archive');
-            }}
-            className="px-6 py-2 border border-white/20 text-white/60 hover:text-white hover:border-white text-[10px] uppercase tracking-widest font-sans rounded-full transition-all duration-300 cursor-pointer pointer-events-auto"
-          >
-            View Archive
-          </button>
-        </div>
 
       </div>
     </section>
