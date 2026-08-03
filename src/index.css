@@ -43,22 +43,33 @@ body {
 }
 @font-face {
   font-family: 'Square Dot Matrix';
-  src: url('/Square-Dot-Matrix.ttf') format('truetype');
+  src: url('/Square-Dot-Matrix.ttf') format('truetype'),
+  url('/Square-Dot-Matrix.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Platinum';
-  src: url('/Platinum Sign.ttf') format('truetype');
+  src: url('/Platinum Sign.ttf') format('truetype'),
+  url('/Platinum Sign.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Led Dot Matrix';
-  src: url('/LED Dot-Matrix.ttf') format('truetype');
+  src: url('/LED Dot-Matrix.ttf') format('truetype'),
+   url('/LED Dot-Matrix.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
+}
+@font-face {
+  font-family: 'Adelia';
+  src: url('/fonts/adelia.ttf') format('truetype'),
+  url('/fonts/adelia.woff2') format('woff2'); 
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; 
 }
