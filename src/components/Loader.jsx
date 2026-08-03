@@ -19,63 +19,70 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
   }, [onFlash, onWipeComplete, onComplete]);
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
-      const progress = { val: 0 };
-      
-      gsap.to(progress, {
-        val: 100,
-        duration: 4.5,
-        ease: "power2.inOut",
-        onUpdate: () => {
-          if (counterRef.current) counterRef.current.innerText = Math.floor(progress.val) + "%";
-        }
-      });
+    let ctx;
+    
+    const frameId = requestAnimationFrame(() => {
+      ctx = gsap.context(() => {
+        const progress = { val: 0 };
+        
+        gsap.to(progress, {
+          val: 100,
+          duration: 4.5,
+          ease: "power2.inOut",
+          onUpdate: () => {
+            if (counterRef.current) counterRef.current.innerText = Math.floor(progress.val) + "%";
+          }
+        });
 
-      gsap.to(actionBoxRef.current, {
-        height: "100%",
-        duration: 4.5,
-        ease: "power2.inOut",
-        onComplete: () => {
-          const tl = gsap.timeline();
+        gsap.to(actionBoxRef.current, {
+          height: "100%",
+          duration: 4.5,
+          ease: "power2.inOut",
+          onComplete: () => {
+            const tl = gsap.timeline();
 
-          tl.to(contentRef.current, { opacity: 0, duration: 0.1 })
-            .to(actionBoxRef.current, {
-              width: "100%",
-              duration: 0.6,
-              ease: "expo.inOut",
-              onComplete: () => {
-                gsap.set(darkBgRef.current, { opacity: 0 });
-                if (flashRef.current) flashRef.current(); 
-                gsap.set(actionBoxRef.current, { left: "auto", right: 0 });
-              }
-            })
-            .to({}, { duration: 0.3 })
-            .to(actionBoxRef.current, {
-              width: "4rem", 
-              duration: 1.5,
-              ease: "power4.inOut",
-              onComplete: () => {
-                if (wipeCompleteRef.current) wipeCompleteRef.current();
-              }
-            })
-            .to(actionBoxRef.current, {
-              backgroundColor: "rgba(0, 0, 0, 0.2)", 
-              borderLeft: "1px solid rgba(255, 255, 255, 0.05)", 
-              duration: 0.6,
-              ease: "power2.out",
-              onComplete: () => {
-                if (completeRef.current) completeRef.current();
-              }
-            });
-        }
-      });
-    }, containerRef);
+            tl.to(contentRef.current, { opacity: 0, duration: 0.1 })
+              .to(actionBoxRef.current, {
+                width: "100%",
+                duration: 0.6,
+                ease: "expo.inOut",
+                onComplete: () => {
+                  gsap.set(darkBgRef.current, { opacity: 0 });
+                  if (flashRef.current) flashRef.current(); 
+                  gsap.set(actionBoxRef.current, { left: "auto", right: 0 });
+                }
+              })
+              .to({}, { duration: 0.3 })
+              .to(actionBoxRef.current, {
+                width: "4rem", 
+                duration: 1.5,
+                ease: "power4.inOut",
+                onComplete: () => {
+                  if (wipeCompleteRef.current) wipeCompleteRef.current();
+                }
+              })
+              .to(actionBoxRef.current, {
+                backgroundColor: "rgba(0, 0, 0, 0.2)", 
+                borderLeft: "1px solid rgba(255, 255, 255, 0.05)", 
+                duration: 0.6,
+                ease: "power2.out",
+                onComplete: () => {
+                  if (completeRef.current) completeRef.current();
+                }
+              });
+          }
+        });
+      }, containerRef);
+    });
 
-    return () => ctx.revert();
+    return () => {
+      cancelAnimationFrame(frameId);
+      if (ctx) ctx.revert();
+    };
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 w-full h-dvh z-[9999] overflow-hidden pointer-events-none">
+    <div ref={containerRef} className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none">
       <div 
         ref={darkBgRef} 
         className="absolute inset-0 w-full h-full z-20 pointer-events-auto bg-[#111114]"
@@ -130,9 +137,9 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
       </div>
 
       <div ref={contentRef} className="absolute inset-0 w-full h-full flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 z-30 pointer-events-auto">
-        <div className="flex-1 flex flex-col items-start sm:items-end justify-start pt-16 sm:pt-24 md:pt-44 pr-4 sm:pr-10 md:pr-32 w-full">
+        <div className="flex-1 flex flex-col items-end justify-center md:justify-start md:pt-44 pr-4 sm:pr-8 md:pr-32 w-full">
           <div className="flex flex-col items-start w-full max-w-xs md:max-w-sm">
-            <div className="h-16 sm:h-20 md:h-36 lg:h-40 mb-12 sm:mb-20 md:mb-52 overflow-hidden flex items-center justify-start">
+            <div className="h-[79px] sm:h-24 md:h-36 lg:h-40 mb-8 sm:mb-12 md:mb-52 overflow-hidden flex items-center justify-start">
               <img src="/aerocon26-logo.png" alt="Flagship Event" className="w-full h-full object-contain opacity-100" />
             </div>
 
@@ -166,7 +173,7 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-end pb-8 sm:pb-10 md:pb-14">
+        <div className="flex flex-col items-start justify-end pb-12 sm:pb-16 md:pb-20">
           <div className="flex items-center gap-4">
             <div className="w-1.5 h-6 bg-[#00d2ff]"></div>
             <span ref={counterRef} className="text-[#00d2ff] text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter leading-none">
