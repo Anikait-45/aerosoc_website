@@ -82,7 +82,8 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none">
+    /* Removed overflow-hidden to stop the browser from slicing off bottom text */
+    <div ref={containerRef} className="fixed inset-0 z-[9999] pointer-events-none">
       <div 
         ref={darkBgRef} 
         className="absolute inset-0 w-full h-full z-20 pointer-events-auto bg-[#111114]"
@@ -173,7 +174,7 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-end pb-12 sm:pb-16 md:pb-20">
+        <div className="flex flex-col items-start justify-end pb-16 sm:pb-20 md:pb-24">
           <div className="flex items-center gap-4">
             <div className="w-1.5 h-6 bg-[#00d2ff]"></div>
             <span ref={counterRef} className="text-[#00d2ff] text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter leading-none">
