@@ -82,8 +82,7 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
   }, []);
 
   return (
-    // Reverted to fixed inset-0 for rock-solid fullscreen locking
-    <div ref={containerRef} className="fixed inset-0 z-[9999] pointer-events-none overflow-hidden">
+    <div ref={containerRef} className="fixed top-0 left-0 w-full h-[100svh] z-[9999] pointer-events-none overflow-hidden">
       <div 
         ref={darkBgRef} 
         className="absolute inset-0 w-full h-full z-20 pointer-events-auto bg-[#111114]"
@@ -137,11 +136,14 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
         </svg>
       </div>
 
-      {/* THE FIX: Changed 'bottom-X' to 'inset-0' and used massive padding-bottom (pb-32/pb-36) to force the text up visually */}
-      <div ref={contentRef} className="absolute inset-0 flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 pb-28 sm:pb-32 md:pb-36 z-30 pointer-events-auto">
-        <div className="flex-1 flex flex-col items-end justify-center md:justify-start md:pt-44 pr-4 sm:pr-8 md:pr-32 w-full">
+      <div ref={contentRef} className="absolute inset-0 flex flex-col justify-between pr-6 pl-16 sm:pr-8 sm:pl-20 md:pr-12 md:pl-28 py-[6vh] md:py-[8vh] z-30 pointer-events-auto">
+        
+        {/* CHANGED: Swapped md:pt-44 for md:pt-[10vh] so the padding shrinks on smaller monitors */}
+        <div className="flex-1 flex flex-col items-end justify-center md:justify-start md:pt-[10vh] pr-4 sm:pr-8 md:pr-32 w-full">
           <div className="flex flex-col items-start w-full max-w-xs md:max-w-sm">
-            <div className="h-[79px] sm:h-24 md:h-36 lg:h-40 mb-8 sm:mb-12 md:mb-52 overflow-hidden flex items-center justify-start">
+            
+            {/* CHANGED: Swapped md:mb-52 for md:mb-[12vh] so the gap scales natively without breaking flexbox */}
+            <div className="h-[79px] sm:h-24 md:h-36 lg:h-40 mb-8 sm:mb-10 md:mb-[12vh] overflow-hidden flex items-center justify-start">
               <img src="/aerocon26-logo.png" alt="Flagship Event" className="w-full h-full object-contain opacity-100" />
             </div>
 
