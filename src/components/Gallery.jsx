@@ -57,6 +57,9 @@ const Gallery = ({ onNavigate }) => {
           <p className="mt-4 text-[10px] text-gray-600 font-sans tracking-[0.2em] uppercase">Neil Armstrong</p>
         </div>
 
+        <div className="flex-shrink-0 w-[45vw] flex items-center justify-end pointer-events-auto relative z-50">
+          
+        </div>
 
       </div>
     </section>

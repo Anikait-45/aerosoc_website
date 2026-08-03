@@ -75,10 +75,10 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-[9999] overflow-hidden flex items-end justify-center pointer-events-none">
+    <div ref={containerRef} className="fixed inset-0 w-full h-dvh z-[9999] overflow-hidden pointer-events-none">
       <div 
         ref={darkBgRef} 
-        className="absolute inset-0 z-20 pointer-events-auto bg-[#111114]"
+        className="absolute inset-0 w-full h-full z-20 pointer-events-auto bg-[#111114]"
         style={{
           backgroundImage: `
             radial-gradient(circle at 68% 42%, #2a2a30 0%, #18181d 38%, #0e0e11 80%),
@@ -129,10 +129,10 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
         </svg>
       </div>
 
-      <div ref={contentRef} className="absolute inset-0 w-full h-full flex flex-col justify-between p-8 pl-20 md:p-12 md:pl-28 relative z-30 pointer-events-auto">
-        <div className="flex-1 flex flex-col items-end justify-start pt-36 md:pt-44 pr-12 md:pr-32 w-full">
+      <div ref={contentRef} className="absolute inset-0 w-full h-full flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 z-30 pointer-events-auto">
+        <div className="flex-1 flex flex-col items-start sm:items-end justify-start pt-16 sm:pt-24 md:pt-44 pr-4 sm:pr-10 md:pr-32 w-full">
           <div className="flex flex-col items-start w-full max-w-xs md:max-w-sm">
-            <div className="h-24 md:h-36 lg:h-40 mb-36 md:mb-52 overflow-hidden flex items-center justify-start">
+            <div className="h-16 sm:h-20 md:h-36 lg:h-40 mb-12 sm:mb-20 md:mb-52 overflow-hidden flex items-center justify-start">
               <img src="/aerocon26-logo.png" alt="Flagship Event" className="w-full h-full object-contain opacity-100" />
             </div>
 
@@ -159,27 +159,27 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
 
               <div className="w-full h-[1px] bg-white/20 my-1"></div>
 
-              <p className="text-white/90 font-sans font-semibold text-xs md:text-sm tracking-[0.25em] uppercase">
+              <p className="text-white/90 font-sans font-semibold text-[10px] sm:text-xs md:text-sm tracking-[0.25em] uppercase">
                 COMING SOON
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-end pb-4">
+        <div className="flex flex-col items-start justify-end pb-8 sm:pb-10 md:pb-14">
           <div className="flex items-center gap-4">
             <div className="w-1.5 h-6 bg-[#00d2ff]"></div>
-            <span ref={counterRef} className="text-[#00d2ff] text-4xl md:text-5xl font-black font-display tracking-tighter leading-none">
+            <span ref={counterRef} className="text-[#00d2ff] text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter leading-none">
               0%
             </span>
           </div>
-          <span className="text-white text-[9px] md:text-[10px] tracking-[0.25em] uppercase opacity-60 font-mono mt-4">
+          <span className="text-white text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.25em] uppercase opacity-60 font-mono mt-4">
             Initializing Environment...
           </span>
         </div>
       </div>
 
-      <div ref={actionBoxRef} className="absolute bottom-0 left-0 w-16 bg-[#00d2ff] z-40" style={{ height: "0%" }}></div>
+      <div ref={actionBoxRef} className="absolute bottom-0 left-0 w-12 md:w-16 bg-[#00d2ff] z-40" style={{ height: "0%" }}></div>
     </div>
   );
 };
