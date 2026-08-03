@@ -82,7 +82,6 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
   }, []);
 
   return (
-    /* Removed overflow-hidden to stop the browser from slicing off bottom text */
     <div ref={containerRef} className="fixed inset-0 z-[9999] pointer-events-none">
       <div 
         ref={darkBgRef} 
@@ -137,7 +136,8 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
         </svg>
       </div>
 
-      <div ref={contentRef} className="absolute inset-0 w-full h-full flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 z-30 pointer-events-auto">
+      {/* Replaced absolute inset-0 with explicit top/left/right and a safe bottom-8 offset buffer */}
+      <div ref={contentRef} className="absolute top-0 left-0 right-0 bottom-8 sm:bottom-10 md:bottom-12 flex flex-col justify-between p-6 pl-16 sm:p-8 sm:pl-20 md:p-12 md:pl-28 z-30 pointer-events-auto">
         <div className="flex-1 flex flex-col items-end justify-center md:justify-start md:pt-44 pr-4 sm:pr-8 md:pr-32 w-full">
           <div className="flex flex-col items-start w-full max-w-xs md:max-w-sm">
             <div className="h-[79px] sm:h-24 md:h-36 lg:h-40 mb-8 sm:mb-12 md:mb-52 overflow-hidden flex items-center justify-start">
@@ -174,7 +174,7 @@ const Loader = ({ onFlash, onWipeComplete, onComplete }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-start justify-end pb-16 sm:pb-20 md:pb-24">
+        <div className="flex flex-col items-start justify-end pb-4 sm:pb-6 md:pb-8">
           <div className="flex items-center gap-4">
             <div className="w-1.5 h-6 bg-[#00d2ff]"></div>
             <span ref={counterRef} className="text-[#00d2ff] text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter leading-none">
