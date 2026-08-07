@@ -27,14 +27,6 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-col items-start md:items-center">
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <Phone className="w-5 h-5 text-gray-500 group-hover:text-accent transition-colors duration-300" />
-              <div>
-                {/* Changed from <p> to <div> */}
-                <div className="text-accent font-sans text-xs tracking-widest uppercase mb-1">Call Us</div>
-                <div className="text-gray-300 font-sans text-sm">9693052886</div>
-              </div>
-            </div>
           </div>
 
           <div className="flex flex-col items-start md:items-end">

@@ -296,21 +296,21 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       void main() {
         mat3 rotMat = getRotationMatrix(uMouseRot);
         
-        // SATELLITE: Y = -1.8 on mobile
+        // SATELLITE: Shifted to Y = -3.0 on mobile so it sits safely in the bottom half of ALL phone screens
         vec3 satBounce = mix(
           vec3(12.0, sin(uTime * 1.5) * 0.7, 0.0),
-          vec3(0.0, -1.8 + sin(uTime * 1.5) * 0.5, 0.0),
+          vec3(0.0, -3.0 + sin(uTime * 1.5) * 0.5, 0.0),
           uIsMobile
         );
-        // EARTH: Lowered to Y = -5.8 on mobile so it sits cleanly below About Us text
+        // EARTH: Sits at Y = -5.8 on mobile below the About Us text
         vec3 earthBounce = mix(
           vec3(-12.0, sin(uTime * 1.2 + 1.0) * 0.8, 0.0),
           vec3(0.0, -5.8 + sin(uTime * 1.2 + 1.0) * 0.5, 0.0),
           uIsMobile
         );
 
-        // Slightly refined scale on mobile to 0.58 so the globe fits comfortably below text
-        float shapeScale = mix(1.0, 0.58, uIsMobile);
+        // Scaled to 0.55 on mobile to guarantee no clipping on tall or short viewports
+        float shapeScale = mix(1.0, 0.55, uIsMobile);
 
         vec3 rotatedSat = ((rotMat * aSat) * shapeScale) + satBounce;
         vec3 rotatedEarth = ((rotMat * getSpinMatrix(uTime * 0.3) * aEarth) * shapeScale) + earthBounce;
@@ -337,7 +337,8 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
         vec3 finalPos = basePos + (noise * noiseIntensity);
         
         float dist = distance(finalPos, uPointer);
-        if(dist < 4.0) {
+        // DISABLED ON MOBILE: Repulsion force only runs on desktop (uIsMobile < 0.5)
+        if (dist < 4.0 && uIsMobile < 0.5) {
             vec3 dir = normalize(finalPos - uPointer);
             float force = smoothstep(4.0, 0.0, dist);
             finalPos += dir * force * 1.5;
@@ -396,6 +397,9 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
     const currentRotation = new THREE.Vector2(0, 0);
 
     const onMouseMove = (e) => {
+      // Ignore mousemove on mobile/touch screens so simulated touch events don't move uPointer
+      if (window.innerWidth < 768) return;
+
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);

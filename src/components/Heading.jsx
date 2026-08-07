@@ -38,8 +38,8 @@ const Heading = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Main Typography Block - Scaled up text & added gap between words on mobile */}
-      <div className="relative z-10 pointer-events-auto w-full max-w-7xl 2xl:max-w-[1600px] mx-auto mt-64 sm:mt-40 md:my-auto text-center md:text-left">
+      {/* Main Typography Block - Changed mt-64 to mt-28 sm:mt-32 so it never collides with the 3D figure on tall phones */}
+      <div className="relative z-10 pointer-events-auto w-full max-w-7xl 2xl:max-w-[1600px] mx-auto mt-28 sm:mt-32 md:my-auto text-center md:text-left">
         <h1 className="text-6xl sm:text-7xl md:text-8xl 2xl:text-9xl font-display font-black text-white uppercase tracking-tighter leading-none sm:leading-tight mb-4 mx-auto md:ml-0 md:pl-0 block w-full">
           AeroSpace <br />
           <span className="text-accent inline-block mt-3 md:mt-0">
@@ -52,8 +52,8 @@ const Heading = ({ onNavigate }) => {
         </p>
       </div>
 
-      {/* MOBILE ONLY: Projects & Workshops buttons — Set to bottom-12, text-xs, and text-white/60 */}
-      <div className="absolute bottom-36 left-0 right-0 z-30 flex md:hidden justify-center items-center gap-10 pointer-events-auto">
+      {/* MOBILE ONLY: Projects & Workshops buttons positioned at bottom center */}
+      <div className="absolute bottom-12 left-0 right-0 z-30 flex md:hidden justify-center items-center gap-10 pointer-events-auto">
         <button 
           onClick={() => onNavigate && onNavigate('projects')}
           className="px-3 py-2 bg-transparent border-none text-white/60 hover:text-accent font-sans font-medium text-xs tracking-widest uppercase transition-all duration-300 cursor-pointer active:scale-95"
