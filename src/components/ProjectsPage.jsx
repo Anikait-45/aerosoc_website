@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { ChevronLeft, ChevronRight, SquareMenu, AlertTriangle } from 'lucide-react';
 
-// Your Project Data
 const projectsData = [
   {
     id: '01',
@@ -32,7 +31,6 @@ const ProjectsPage = () => {
   const mountRef = useRef(null);
   const textContainerRef = useRef(null);
   
-  // THREE.JS SCENE SETUP
   useEffect(() => {
     const w = mountRef.current.clientWidth;
     const h = mountRef.current.clientHeight;
@@ -46,7 +44,6 @@ const ProjectsPage = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mountRef.current.appendChild(renderer.domElement);
 
-    // POINT CLOUD MATERIAL (The Hologram Effect)
     const material = new THREE.PointsMaterial({
       color: 0xffffff,
       size: 0.03,
@@ -57,7 +54,6 @@ const ProjectsPage = () => {
 
     let currentPoints = null;
 
-    // FUNCTION TO GENERATE PROCEDURAL HOLOGRAMS (Placeholders)
     const createPlaceholderHologram = (type) => {
       if (currentPoints) scene.remove(currentPoints);
       
@@ -71,43 +67,20 @@ const ProjectsPage = () => {
         geometry = new THREE.BoxGeometry(3, 3, 3, 30, 30, 30);
       }
 
-      // Convert solid geometry into a wireframe of points
       const edges = new THREE.EdgesGeometry(geometry);
       currentPoints = new THREE.Points(edges, material);
       
-      // Initial Scale for animation
       currentPoints.scale.set(0.1, 0.1, 0.1);
       scene.add(currentPoints);
 
-      // Pop-in animation
       gsap.to(currentPoints.scale, {
         x: 1, y: 1, z: 1,
         duration: 1.5,
         ease: "expo.out"
       });
     };
-
-    /* 
-    ========================================================================
-    HOW TO LOAD YOUR ACTUAL 3D MODELS INSTEAD OF THE PLACEHOLDERS:
-    ========================================================================
-    1. import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-    2. Replace the 'createPlaceholderHologram' logic with this:
-    
-    const loader = new GLTFLoader();
-    loader.load('/your-prototype-file.glb', (gltf) => {
-       const mesh = gltf.scene.children[0];
-       // Grab the vertices from your model and turn them into points
-       const geometry = mesh.geometry;
-       currentPoints = new THREE.Points(geometry, material);
-       scene.add(currentPoints);
-    });
-    ========================================================================
-    */
-
     createPlaceholderHologram(projectsData[activeIdx].modelType);
 
-    // Animation Loop
     let animationFrameId;
     const animate = () => {
       if (currentPoints) {
@@ -119,7 +92,6 @@ const ProjectsPage = () => {
     };
     animate();
 
-    // Handle Resize
     const handleResize = () => {
       const nw = mountRef.current.clientWidth;
       const nh = mountRef.current.clientHeight;
@@ -138,9 +110,7 @@ const ProjectsPage = () => {
       renderer.dispose();
       material.dispose();
     };
-  }, [activeIdx]); // Re-runs the scene logic when the project index changes
-
-  // TEXT ANIMATION HANDLER
+  }, [activeIdx]); 
   const changeProject = (direction) => {
     gsap.to(textContainerRef.current, {
       opacity: 0,
@@ -166,16 +136,14 @@ const ProjectsPage = () => {
   return (
     <section id="projects-page" className="relative w-full h-screen bg-[#050505] overflow-hidden border-t border-white/5 pointer-events-auto">
       
-      {/* === TOP UNDER CONSTRUCTION NOTICE BANNER === */}
       <div className="absolute top-0 left-0 right-0 z-50 bg-[#eaff00]/10 border-b border-[#eaff00]/30 py-2.5 px-6 flex items-center justify-center gap-2.5 backdrop-blur-md pointer-events-none">
         <AlertTriangle className="w-4 h-4 text-[#eaff00] animate-pulse" />
         <p className="text-[#eaff00] text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] uppercase">
-          PAGE UNDER CONSTRUCTION // PROTOTYPES & DATA METRICS CURRENTLY BEING ARCHIVED
+          PAGE UNDER CONSTRUCTION 
         </p>
         <AlertTriangle className="w-4 h-4 text-[#eaff00] animate-pulse" />
       </div>
 
-      {/* 1. THE BLUEPRINT BACKGROUND GRID */}
       <div 
         className="absolute inset-0 z-0 opacity-20 pointer-events-none"
         style={{
@@ -187,14 +155,11 @@ const ProjectsPage = () => {
         }}
       />
       
-      {/* Grid Crosshairs overlay */}
       <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 z-0 pointer-events-none" />
       <div className="absolute top-0 left-1/3 w-[1px] h-full bg-white/10 z-0 pointer-events-none" />
 
-      {/* 2. THREE.JS 3D CANVAS */}
       <div ref={mountRef} className="absolute inset-0 z-10" />
 
-      {/* 3. CENTER HUD CIRCLES (Rotating over the 3D model) */}
       <div className="absolute top-1/2 left-[45%] -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-40">
         <svg width="600" height="600" className="animate-[spin_40s_linear_infinite]">
           <circle cx="300" cy="300" r="280" stroke="white" strokeWidth="2" fill="none" strokeDasharray="10 30" />
@@ -207,7 +172,6 @@ const ProjectsPage = () => {
         </svg>
       </div>
 
-      {/* 4. LEFT SIDEBAR (Lore Style) */}
       <div className="absolute top-28 left-6 md:left-12 z-30 flex flex-col gap-6">
         <div>
           <div className="flex items-center gap-2 text-white/50 mb-2">
@@ -219,7 +183,6 @@ const ProjectsPage = () => {
         
         <div className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center relative mt-4">
           <SquareMenu className="text-white w-8 h-8 opacity-80" />
-          {/* Small decorative colored blocks */}
           <div className="absolute -left-3 top-2 flex flex-col gap-1">
              <div className="w-1 h-3 bg-[#00d2ff]" />
              <div className="w-1 h-2 bg-[#eaff00]" />
@@ -227,11 +190,9 @@ const ProjectsPage = () => {
         </div>
       </div>
 
-      {/* 5. RIGHT SIDEBAR (Project Details & Controls) */}
       <div className="absolute top-1/2 -translate-y-1/2 right-6 md:right-12 lg:right-32 z-30 w-full max-w-sm md:max-w-md">
         
         <div ref={textContainerRef}>
-          {/* Overline */}
           <div className="flex items-center gap-3 mb-4">
             <div className="w-1.5 h-1.5 bg-white" />
             <p className="text-[10px] md:text-xs font-sans tracking-[0.3em] text-white/70 uppercase">
@@ -239,21 +200,17 @@ const ProjectsPage = () => {
             </p>
           </div>
           
-          {/* Title */}
           <h3 className="text-4xl md:text-6xl font-display font-black text-white leading-none uppercase tracking-tighter mb-6">
             {activeProject.title}
           </h3>
           
-          {/* Description */}
           <p className="text-sm md:text-base font-sans text-white/60 leading-relaxed tracking-wide mb-12">
             {activeProject.description}
           </p>
         </div>
 
-        {/* HUD Controls */}
         <div className="flex items-end justify-between border-b border-white/20 pb-4">
           
-          {/* Progress Bar / Indicator */}
           <div className="flex flex-col gap-2 w-32">
             <div className="flex gap-1">
               <div className="w-2 h-2 bg-white/20" />
@@ -271,7 +228,6 @@ const ProjectsPage = () => {
             </p>
           </div>
 
-          {/* Nav Buttons */}
           <div className="flex gap-4">
             <button 
               onClick={() => changeProject('prev')}

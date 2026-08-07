@@ -42,26 +42,21 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
     const highlightSat = new Float32Array(totalCount);
     const highlightEarth = new Float32Array(totalCount);
 
-    // JS Smoothstep for calculating spatial gradients in 3D Space
     const smoothstepJS = (min, max, value) => {
       const t = Math.max(0, Math.min(1, (value - min) / (max - min)));
       return t * t * (3 - 2 * t);
     };
-
-    // --- ACCURATE PROCEDURAL SHAPE GENERATORS ---
 
     const getSatellitePoint = () => {
       const p = Math.random();
       let vec;
       
       if (p < 0.15) { 
-        // Main Body (Octagonal Bus)
         const angle = Math.floor(Math.random() * 8) * (Math.PI / 4);
         const r = 1.6 * Math.random(); 
         const y = (Math.random() - 0.5) * 5.5;
         vec = new THREE.Vector3(r * Math.cos(angle), y, r * Math.sin(angle));
       } else if (p < 0.6) { 
-        // Lattice/Grid Solar Arrays (Wings)
         let valid = false;
         while(!valid) {
           const sign = Math.random() > 0.5 ? 1 : -1;
@@ -87,7 +82,6 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
           }
         }
       } else if (p < 0.8) { 
-        // Deep Parabolic Dish Antenna
         const angle = Math.random() * Math.PI * 2;
         const rRadius = Math.random();
         const r = Math.sqrt(rRadius) * 3.2;
@@ -95,18 +89,15 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
         const thickness = (Math.random() - 0.5) * 0.2;
         vec = new THREE.Vector3(r * Math.cos(angle), y + thickness, r * Math.sin(angle));
       } else if (p < 0.9) { 
-        // Antenna Focal Receiver
         const r = Math.random() * 0.5;
         const angle = Math.random() * Math.PI * 2;
         vec = new THREE.Vector3(r * Math.cos(angle), 6.5 + (Math.random() - 0.5) * 0.5, r * Math.sin(angle));
       } else { 
-        // Thrusters & Instruments (Bottom)
         const angle = Math.random() * Math.PI * 2;
         const r = Math.random() * 1.2;
         vec = new THREE.Vector3(r * Math.cos(angle), -2.8 - Math.random() * 2.0, r * Math.sin(angle));
       }
 
-      // Spatial Gradient Highlighting
       const gradient = smoothstepJS(-5.0, 7.0, vec.x + vec.y * 2.0);
       return { pos: vec, highlight: gradient };
     };
@@ -199,12 +190,14 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
     geometry.setAttribute('aHighlightEarth', new THREE.BufferAttribute(highlightEarth, 1));
 
     const mouse3D = new THREE.Vector3(-9999, -9999, -9999);
+    const isMobileInit = window.innerWidth < 768 ? 1.0 : 0.0;
     
     const vertexShader = `
       uniform float uTime;
       uniform vec3 uPointer;
       uniform float uState;
       uniform vec2 uMouseRot; 
+      uniform float uIsMobile;
       
       attribute vec3 aSat;
       attribute vec3 aEarth;
@@ -303,11 +296,24 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       void main() {
         mat3 rotMat = getRotationMatrix(uMouseRot);
         
-        vec3 satBounce = vec3(12.0, sin(uTime * 1.5) * 0.7, 0.0);
-        vec3 earthBounce = vec3(-12.0, sin(uTime * 1.2 + 1.0) * 0.8, 0.0);
+        // SATELLITE: Y = -1.8 on mobile
+        vec3 satBounce = mix(
+          vec3(12.0, sin(uTime * 1.5) * 0.7, 0.0),
+          vec3(0.0, -1.8 + sin(uTime * 1.5) * 0.5, 0.0),
+          uIsMobile
+        );
+        // EARTH: Lowered to Y = -5.8 on mobile so it sits cleanly below About Us text
+        vec3 earthBounce = mix(
+          vec3(-12.0, sin(uTime * 1.2 + 1.0) * 0.8, 0.0),
+          vec3(0.0, -5.8 + sin(uTime * 1.2 + 1.0) * 0.5, 0.0),
+          uIsMobile
+        );
 
-        vec3 rotatedSat = (rotMat * aSat) + satBounce;
-        vec3 rotatedEarth = (rotMat * getSpinMatrix(uTime * 0.3) * aEarth) + earthBounce;
+        // Slightly refined scale on mobile to 0.58 so the globe fits comfortably below text
+        float shapeScale = mix(1.0, 0.58, uIsMobile);
+
+        vec3 rotatedSat = ((rotMat * aSat) * shapeScale) + satBounce;
+        vec3 rotatedEarth = ((rotMat * getSpinMatrix(uTime * 0.3) * aEarth) * shapeScale) + earthBounce;
 
         vec3 shapePos;
         float state = clamp(uState, 0.0, 3.0);
@@ -372,7 +378,8 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
         uTime: { value: 0 }, 
         uPointer: { value: mouse3D }, 
         uState: { value: 0.0 },
-        uMouseRot: { value: new THREE.Vector2(0, 0) } 
+        uMouseRot: { value: new THREE.Vector2(0, 0) },
+        uIsMobile: { value: isMobileInit }
       },
       vertexShader,
       fragmentShader
@@ -397,17 +404,45 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
       targetRotation.y = mouse.x * Math.PI; 
       targetRotation.x = mouse.y * Math.PI * 0.5; 
     };
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (e.touches.length === 1) {
+        const deltaX = (e.touches[0].clientX - touchStartX) / window.innerWidth;
+        const deltaY = (e.touches[0].clientY - touchStartY) / window.innerHeight;
+
+        targetRotation.y += deltaX * Math.PI * 2.0;
+        targetRotation.x += deltaY * Math.PI * 1.0;
+
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    };
     
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseleave', () => {
       mouse3D.set(-9999, -9999, -9999);
       targetRotation.set(0, 0); 
     });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
     
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight; 
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      if (materialRef.current) {
+        materialRef.current.uniforms.uIsMobile.value = window.innerWidth < 768 ? 1.0 : 0.0;
+      }
     };
     window.addEventListener('resize', onResize);
 
@@ -429,6 +464,8 @@ const SpaceMorphBackground = forwardRef(({ active = false }, ref) => {
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('resize', onResize);
       cancelAnimationFrame(animationFrameId);
       if (mountRef.current && renderer.domElement) {

@@ -115,15 +115,16 @@ const UpcomingEvents = () => {
         <div className="w-screen h-full flex flex-col items-center justify-center pt-6 pb-24 md:pt-12 md:pb-40 flex-shrink-0">
           
           <div className="text-center mb-12 pointer-events-auto flex flex-col items-center justify-center w-full">
-              <div className="aero-element h-24 md:h-32 lg:h-100 w-full flex items-center justify-center overflow-hidden z-10 relative opacity-0">
-                <img 
-                  src="/aerocon26-logo.png" 
-                  alt="Aerocon 26" 
-                  className="h-full w-full object-contain" 
-                />
-              </div>
+            {/* Bumped mobile logo height to h-56 sm:h-64 (desktop md:h-32 lg:h-100 untouched) */}
+            <div className="aero-element h-56 sm:h-64 md:h-32 lg:h-100 w-full flex items-center justify-center overflow-hidden z-10 relative opacity-0">
+              <img 
+                src="/aerocon26-logo.png" 
+                alt="Aerocon 26" 
+                className="h-full w-full object-contain" 
+              />
+            </div>
 
-            <div className="aero-element relative z-0 text-accent font-sans tracking-[0.3em] uppercase text-xs md:text-sm mt-2 md:mt-4 opacity-0">
+            <div className="aero-element relative z-0 text-accent font-sans tracking-[0.3em] uppercase text-sm sm:text-base md:text-sm mt-3 sm:mt-4 md:mt-4 opacity-0">
               Flagship Event • Coming Soon
             </div>
           </div>
@@ -136,8 +137,8 @@ const UpcomingEvents = () => {
           <div className="sky-header text-center mb-12 pointer-events-auto opacity-0">
             <h2 className="text-5xl md:text-[100px] text-white tracking-wider leading-none">
               <span 
-                className="font-light" 
-                style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 400, fontSize: 115 }}
+                className="font-light text-[72px] sm:text-[85px] md:text-[115px]" 
+                style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 400 }}
               >
                 SKY
               </span>{" "}
@@ -149,7 +150,6 @@ const UpcomingEvents = () => {
               </span>
             </h2>
 
-            {/* Shifted to the right under BREACH using translate-x */}
             <p className="text-accent font-sans tracking-[0.3em] uppercase text-xs md:text-sm mt-1 translate-x-12 md:translate-x-48">
               ROCKETRY COMPETITION • Winter
             </p>
@@ -157,10 +157,11 @@ const UpcomingEvents = () => {
 
           <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-12 items-center pointer-events-auto">
             <div className="w-full aspect-video bg-black/50 backdrop-blur-md border border-white/10 p-2 group overflow-hidden">
+              {/* Removed grayscale classes so the image displays in full color by default */}
               <img 
                 src="/skybreach2.jpeg" 
                 alt="Sky Breach" 
-                className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
+                className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105"
               />
             </div>
 
